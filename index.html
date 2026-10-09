@@ -386,6 +386,23 @@
             .auth-container { max-height: calc(100vh - 24px); max-height: calc(100dvh - 24px); overflow-y: auto; }
         }
 
+
+        /* Requested fixes: warm gradient controls, theme toggle, and centered comments sheet. */
+        :root { --warm-gradient: linear-gradient(110deg, #ffe52b 0%, #ff9800 42%, #ff4b00 75%, #f52216 100%); }
+        .btn:not(.btn-google):not(.btn-facebook), .hub-upload-btn-main, .hub-publish-btn, .edit-sheet-save.active, .chat-send-btn {
+            background: var(--warm-gradient) !important; color: #241006 !important; border-color: transparent;
+        }
+        #comment-bottom-sheet { bottom: auto; top: 50%; left: 50%; width: min(94vw, 620px); max-height: 76vh; max-height: 76dvh; height: min(70vh, 650px); border-radius: 20px; transform: translate(-50%, calc(100vh + 100%)); transition: transform .28s ease; }
+        #comment-bottom-sheet.open { bottom: auto; top: 50%; transform: translate(-50%, -50%); }
+        #comment-bottom-sheet .comments-list { min-height: 0; }
+        body.light-mode { --bg-color: #fff7e5; --text-color: #24150c; --border-color: rgba(110,55,0,.18); --glass-bg: rgba(255,255,255,.78); --glass-border: rgba(255,153,0,.35); background: #fff7e5; color: #24150c; }
+        body.light-mode .page-section, body.light-mode .profile-container, body.light-mode #chat-page { color: #24150c; }
+        body.light-mode .bottom-sheet { background: rgba(255,250,240,.97); color: #24150c; border-color: rgba(255,153,0,.35); }
+        body.light-mode .sheet-header, body.light-mode .comment-input-container { border-color: rgba(110,55,0,.15); }
+        body.light-mode input, body.light-mode textarea { background: rgba(255,255,255,.9); color: #24150c; }
+        body.light-mode .comment-text, body.light-mode .lang-option { color: #24150c; }
+        @media (max-width: 767px) { #comment-bottom-sheet { width: calc(100vw - 20px); height: min(72dvh, 650px); max-height: 78dvh; } }
+
     </style>
 </head>
 <body>
@@ -679,6 +696,11 @@
             
             <div id="settings-main" style="padding: 15px; overflow-y: auto; display: flex; flex-direction: column; height: 100%;">
                 
+                <div class="lang-option" onclick="toggleThemeMode()" role="button" tabindex="0">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"></path></svg>
+                    <span id="theme-mode-label">Light Mode</span>
+                </div>
+
                 <div class="lang-option" onclick="showLanguageSettings()">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
                     <span data-i18n="language_menu">Language</span>
@@ -903,7 +925,7 @@
         // Supabase project connection (publishable key is intended for browser use).
         const SUPABASE_URL = 'https://brjnqzqfvodupebffxih.supabase.co';
         const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_5Eoi68ZvYBgimodfDX5G_Q_cSbuOxse';
-        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, storage: window.localStorage } });
         // --- TRANSLATION SYSTEM ---
         const translations = {
             'en': {
@@ -1125,6 +1147,18 @@
                 if (button) { button.disabled = false; button.style.opacity = ''; }
             }
         }
+
+        function applyThemeMode(mode) {
+            const normalized = mode === 'light' ? 'light' : 'dark';
+            document.body.classList.toggle('light-mode', normalized === 'light');
+            localStorage.setItem('rk_video_theme_mode', normalized);
+            const label = document.getElementById('theme-mode-label');
+            if (label) label.textContent = normalized === 'dark' ? 'Light Mode' : 'Dark Mode';
+        }
+        function toggleThemeMode() {
+            applyThemeMode(document.body.classList.contains('light-mode') ? 'dark' : 'light');
+        }
+        document.addEventListener('DOMContentLoaded', () => applyThemeMode(localStorage.getItem('rk_video_theme_mode') || 'dark'));
 
         // --- Settings Logic ---
         function openSettingsSheet() {
