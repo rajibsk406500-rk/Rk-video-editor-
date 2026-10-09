@@ -1,0 +1,2309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Motion Template</title>
+    <style>
+        /* CSS Section */
+        @import url('https://fonts.googleapis.com/css2?family=Grand+Hotel&family=Roboto:wght@400;500;700&display=swap');
+        
+        /* Custom Fonts Configuration */
+        @font-face { font-family: 'Shojumaru Regular'; src: local('Shojumaru Regular'); }
+        @font-face { font-family: 'GreziaDEMO- Regular'; src: local('GreziaDEMO- Regular'); }
+        @font-face { font-family: 'GERALDINE PERSONAL'; src: local('GERALDINE PERSONAL'); }
+        @font-face { font-family: 'Trailer Valentine'; src: local('Trailer Valentine'); }
+        @font-face { font-family: 'Li Subhashis Unicode'; src: local('Li Subhashis Unicode'); }
+        @font-face { font-family: 'Li Sweet Arkopravo'; src: local('Li Sweet Arkopravo'); }
+        @font-face { font-family: 'Li Sabbir Ashalota 3'; src: local('Li Sabbir Ashalota 3'); }
+        @font-face { font-family: 'Li Byomgraphy'; src: local('Li Byomgraphy'); }
+
+        :root {
+            --primary: #fe2c55;
+            --bg-color: #0d0614;
+            --text-color: #ffffff;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --ig-gradient: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+            --theme-color: #F5C518;
+            --theme-hover: #D4AA10;
+            --glass-bg: rgba(255, 255, 255, 0.06);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --glass-blur: blur(20px);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        html { scroll-snap-type: y mandatory; }
+        body { font-family: 'Roboto', sans-serif; background-color: var(--bg-color); color: var(--text-color); overflow-x: hidden; height: 100vh; }
+
+        #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; background: radial-gradient(circle at center, #1a0933 0%, #05020a 100%); }
+
+        .app-container { position: relative; z-index: 2; min-height: 100vh; display: flex; flex-direction: column; }
+
+        .auth-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 5000; display: flex; justify-content: center; align-items: center; padding: 20px; background: var(--bg-color); }
+        .auth-container { width: 100%; max-width: 380px; text-align: center; background: var(--glass-bg); padding: 40px 25px; border-radius: 28px; backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); box-shadow: 0 25px 45px rgba(0, 0, 0, 0.35), inset 0 0 15px rgba(255,255,255,0.05); }
+        .auth-logo { font-family: 'Grand Hotel', cursive; font-size: 54px; margin-bottom: 5px; letter-spacing: 1px; background: linear-gradient(45deg, #fff, var(--theme-color)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .auth-subtitle { font-size: 14px; color: #b3b3b3; margin-bottom: 30px; }
+
+        .top-nav { position: fixed; top: 0; width: 100%; height: 60px; display: flex; justify-content: space-between; align-items: center; padding: 0 15px; background: rgba(13, 6, 20, 0.5); backdrop-filter: blur(10px); z-index: 1000; border-bottom: 1px solid var(--border-color); transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out; }
+        .header-hidden { transform: translateY(-100%); opacity: 0; pointer-events: none; }
+
+        .logo { font-family: 'Grand Hotel', cursive; font-size: 32px; letter-spacing: 1px; }
+        .top-icons { display: flex; gap: 20px; }
+        .icon { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; cursor: pointer; }
+
+        .stories-tray { display: flex; gap: 15px; padding: 75px 15px 15px 15px; overflow-x: auto; border-bottom: 1px solid var(--border-color); scrollbar-width: none; scroll-snap-align: start; }
+        .stories-tray::-webkit-scrollbar { display: none; }
+        .story-item { display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; min-width: 70px; }
+        .story-ring { width: 70px; height: 70px; border-radius: 50%; padding: 3px; background: var(--ig-gradient); position: relative; }
+        .story-ring.add-story { background: transparent; border: 1px solid #555; }
+        .story-img { width: 100%; height: 100%; border-radius: 50%; border: 2px solid var(--bg-color); object-fit: cover; }
+        .story-add-icon { position: absolute; bottom: 0; right: 0; background: var(--theme-color); color: #000; border-radius: 50%; width: 22px; height: 22px; display: flex; justify-content: center; align-items: center; border: 2px solid var(--bg-color); font-size: 16px; font-weight: bold; z-index: 10; }
+        .story-name { font-size: 11px; color: #ddd; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 70px; }
+
+        .feed { width: 100%; padding-bottom: 60px; }
+        .no-videos { display: flex; flex-direction: column; justify-content: center; align-items: center; height: calc(100vh - 200px); color: #666; text-align: center; padding: 20px; }
+        .no-videos svg { width: 50px; height: 50px; margin-bottom: 10px; stroke: #444; }
+
+        .video-card { width: 100%; height: calc(100vh - 60px); position: relative; background: #000; border-bottom: 1px solid var(--border-color); scroll-snap-align: start; overflow: hidden; }
+        video { width: 100%; height: 100%; object-fit: cover; }
+        .video-tap-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 5; }
+
+        .big-heart { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0); width: 100px; height: 100px; fill: #ff2c55; opacity: 0; z-index: 25; pointer-events: none; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease-out; filter: drop-shadow(0px 10px 20px rgba(0,0,0,0.5)); }
+        .big-heart.animate { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+
+        .video-more-options { position: absolute; top: 80px; right: 15px; z-index: 20; color: white; cursor: pointer; font-size: 24px; padding: 5px; text-shadow: 1px 1px 3px black; }
+        .video-more-menu { display: none; position: absolute; top: 110px; right: 15px; background: rgba(30,20,40,0.95); border: 1px solid var(--glass-border); border-radius: 8px; z-index: 30; width: 150px; backdrop-filter: blur(10px); }
+        .video-more-menu button { width: 100%; padding: 12px; background: none; border: none; color: white; text-align: left; font-size: 14px; border-bottom: 1px solid var(--glass-border); cursor: pointer; }
+        .video-more-menu button:last-child { border-bottom: none; }
+
+        .video-actions { position: absolute; right: 15px; bottom: 30px; display: flex; flex-direction: column; gap: 20px; align-items: center; z-index: 20; }
+        .action-btn { display: flex; flex-direction: column; align-items: center; color: white; cursor: pointer; filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.8)); transition: transform 0.2s; }
+        .action-btn:hover { transform: scale(1.1); }
+        .action-btn svg { width: 32px; height: 32px; fill: transparent; stroke: white; stroke-width: 2; }
+        .action-btn.liked svg { fill: #ff2c55; stroke: #ff2c55; }
+        .action-btn.saved svg { fill: var(--theme-color); stroke: var(--theme-color); }
+        .action-text { font-size: 13px; margin-top: 4px; font-weight: 500; }
+        .video-info { position: absolute; bottom: 20px; left: 15px; right: 70px; z-index: 10; text-shadow: 1px 1px 3px rgba(0,0,0,0.8); }
+
+        .template-btn-container { margin-bottom: 12px; }
+        .use-template-btn { display: inline-flex; align-items: center; gap: 6px; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; color: #fff; text-decoration: none; cursor: pointer; border: 1px solid rgba(255, 255, 255, 0.2); transition: background 0.3s ease, transform 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .use-template-btn:hover { background: rgba(255, 255, 255, 0.25); transform: scale(1.02); }
+
+        .video-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+        .video-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid var(--theme-color); }
+        .video-username { font-weight: bold; font-size: 15px; }
+        .follow-btn { background: transparent; border: 1px solid white; color: white; padding: 3px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; margin-left: 5px; transition: 0.3s; backdrop-filter: blur(5px); }
+        .follow-btn.following { background: rgba(255,255,255,0.2); border-color: transparent; }
+        .video-title { font-size: 14px; margin-bottom: 5px; line-height: 1.4; }
+        .video-badge { background: rgba(255, 255, 255, 0.2); padding: 2px 6px; font-size: 10px; border-radius: 3px; backdrop-filter: blur(5px); }
+
+        .page-section { display: none; padding: 80px 20px 80px 20px; min-height: 100vh; }
+        #profile-page { padding: 0; }
+
+        .profile-container { text-align: center; width: 100%; min-height: 100vh; margin: 0; position: relative; background: linear-gradient(180deg, rgba(26,9,51,0.4) 0%, var(--bg-color) 100%); border: none; padding: 0 0 80px 0; backdrop-filter: var(--glass-blur); display: flex; flex-direction: column; align-items: center; overflow-y: auto; }
+        .profile-cover-wrapper { width: 100%; height: 180px; background: linear-gradient(135deg, #1a0933 0%, #2c1a4d 50%, #3d1b5c 100%); position: relative; border-bottom: 1px solid rgba(255,255,255,0.05); background-size: cover; background-position: center; cursor: pointer; }
+        .profile-header-actions { position: absolute; top: 20px; right: 20px; z-index: 10; display: flex; gap: 15px; }
+        .profile-menu-icon { position: static; cursor: pointer; background: rgba(0, 0, 0, 0.4); padding: 8px; border-radius: 50%; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.1); transition: 0.3s; }
+        .profile-menu-icon:hover { background: rgba(0, 0, 0, 0.6); }
+
+        .profile-avatar-wrapper { position: relative; margin-top: -60px; margin-bottom: 12px; z-index: 5; display: inline-block; cursor: pointer; }
+        .profile-pic { width: 110px; height: 110px; border-radius: 50%; object-fit: cover; border: 4px solid var(--bg-color); margin-bottom: 0; margin-top: 0; box-shadow: 0 8px 24px rgba(0,0,0,0.4); background: #222; }
+        .verified-badge { position: absolute; bottom: 4px; right: 4px; background: #1877F2; color: #fff; border-radius: 50%; width: 24px; height: 24px; display: flex; justify-content: center; align-items: center; border: 3px solid var(--bg-color); font-size: 11px; }
+
+        .profile-info-block { padding: 0 20px; width: 100%; max-width: 480px; }
+        #display-name { font-size: 24px; font-weight: 700; color: #fff; letter-spacing: 0.3px; margin-bottom: 2px; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        #display-username { font-size: 14px; color: var(--theme-color); margin-bottom: 6px; font-weight: 500; }
+        #display-gender { font-size: 12px; color: #8e8e93; margin-bottom: 10px; background: rgba(255,255,255,0.08); display: inline-block; padding: 2px 10px; border-radius: 12px; }
+        #display-bio { color: #b3b3b3; margin-bottom: 20px !important; font-size: 14px; line-height: 1.5; font-weight: 400; }
+
+        .profile-stats { display: flex; justify-content: space-around; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); padding: 12px 10px; border-radius: 16px; margin: 0 0 20px 0; width: 100%; backdrop-filter: blur(5px); }
+        .stat-box { display: flex; flex-direction: column; align-items: center; flex: 1; position: relative; }
+        .stat-box:not(:last-child)::after { content: ''; position: absolute; right: 0; top: 25%; height: 50%; width: 1px; background: rgba(255,255,255,0.1); }
+        .stat-box strong { font-size: 18px; color: #fff; font-weight: 700; }
+        .stat-box span { font-size: 12px; color: #8e8e93; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .profile-action-row { display: flex; gap: 10px; width: 100%; margin-bottom: 25px; }
+        .profile-btn-edit { flex: 1; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 10px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.2s ease; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+        .profile-btn-edit:hover { background: rgba(255, 255, 255, 0.18); }
+
+        .grid-tabs-header { width: 100%; border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: center; background: rgba(0,0,0,0.1); }
+        .tab-title-item { padding: 12px 30px; color: var(--theme-color); font-size: 14px; font-weight: 600; border-bottom: 2px solid var(--theme-color); display: flex; align-items: center; gap: 6px; }
+
+        .profile-video-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; width: 100%; padding: 3px; margin-top: 0; }
+        .profile-grid-item { aspect-ratio: 9/16; background: #16121e; position: relative; border-radius: 4px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.2); cursor: pointer; }
+        .profile-grid-item img { width: 100%; height: 100%; object-fit: cover; }
+        .profile-grid-views { position: absolute; bottom: 8px; left: 8px; font-size: 11px; font-weight: 500; color: white; background: rgba(0, 0, 0, 0.5); padding: 2px 6px; border-radius: 4px; backdrop-filter: blur(3px); text-shadow: none; display: flex; align-items: center; gap: 3px; z-index: 2; }
+
+        .instagram-edit-sheet { position: fixed; inset: 0; width: 100%; height: 100vh; height: 100dvh; background: linear-gradient(180deg, #160c24 0%, #0d0614 100%); z-index: 7000; transform: translateY(105%); visibility: hidden; pointer-events: none; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.15), visibility 0s linear 0.4s; display: flex; flex-direction: column; overflow-y: auto; overscroll-behavior: contain; }
+        .instagram-edit-sheet.open { transform: translateY(0); visibility: visible; pointer-events: auto; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.15), visibility 0s; }
+        .edit-sheet-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); background: rgba(13, 6, 20, 0.8); backdrop-filter: blur(15px); position: sticky; top: 0; z-index: 10; }
+        .edit-sheet-close { font-size: 24px; cursor: pointer; color: #bbb; }
+        .edit-sheet-title { font-size: 17px; font-weight: bold; }
+        .edit-sheet-save { background: rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.3); border: 1px solid rgba(255,255,255,0.05); padding: 6px 16px; border-radius: 20px; font-size: 14px; font-weight: bold; cursor: not-allowed; backdrop-filter: blur(5px); transition: all 0.3s ease; }
+        .edit-sheet-save.active { background: var(--theme-color); color: #000; cursor: pointer; box-shadow: 0 4px 12px rgba(245, 197, 24, 0.3); border-color: transparent; }
+        .edit-sheet-content { padding: 25px 20px; display: flex; flex-direction: column; align-items: center; }
+        .edit-pfp-container { position: relative; margin-bottom: 20px; cursor: pointer; }
+        .edit-pfp-preview { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid var(--theme-color); }
+        .edit-pfp-overlay { position: absolute; bottom: 0; right: 0; background: #1877F2; width: 30px; height: 30px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 2px solid #160c24; font-size: 16px; }
+        .input-field-group { width: 100%; max-width: 450px; margin-bottom: 20px; }
+        .input-field-label { font-size: 12px; color: #8e8e93; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; padding-left: 4px; }
+
+        input, textarea, select { width: 100%; margin-bottom: 15px; padding: 14px; border-radius: 12px; border: 1px solid var(--glass-border); background: rgba(255, 255, 255, 0.07); color: white; font-family: 'Roboto', sans-serif; font-size: 14px; transition: 0.3s; }
+        input:focus, textarea:focus, select:focus { outline: none; border-color: rgba(255, 255, 255, 0.5); background: rgba(255, 255, 255, 0.12); }
+        input[type="datetime-local"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
+
+        .btn { background: var(--theme-color); color: #000; padding: 14px 20px; border: none; border-radius: 12px; cursor: pointer; width: 100%; font-weight: bold; font-size: 15px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(245, 197, 24, 0.3); }
+        .btn:hover { background: var(--theme-hover); box-shadow: 0 6px 20px rgba(245, 197, 24, 0.5); transform: translateY(-1px); }
+        .btn-google { background: rgba(255, 255, 255, 0.95); color: black; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; box-shadow: none; }
+        .btn-google:hover { background: #ffffff; box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2); transform: translateY(-1px); }
+        .btn-facebook { background: #1877F2; color: white; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px; box-shadow: none; }
+        .btn-facebook:hover { background: #166fe5; box-shadow: 0 4px 15px rgba(24, 119, 242, 0.3); transform: translateY(-1px); }
+
+        h3 { margin-bottom: 20px; text-align: center;}
+        nav.bottom-nav { width: 100%; height: 60px; background: rgba(13, 6, 20, 0.6); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); display: flex; justify-content: space-around; align-items: center; position: fixed; bottom: 0; z-index: 1000; border-top: 1px solid var(--border-color); }
+        .nav-item { cursor: pointer; display: flex; flex-direction: column; align-items: center; color: #fff; opacity: 0.5; transition: 0.2s; }
+        .nav-item:hover, .nav-item.active { opacity: 1; color: var(--theme-color); }
+        .nav-item svg { width: 26px; height: 26px; }
+        .glass-panel { background: var(--glass-bg); border: 1px solid var(--glass-border); padding: 30px 20px; border-radius: 20px; backdrop-filter: var(--glass-blur); max-width: 500px; margin: 0 auto; }
+
+        #chat-page { display: none; padding-top: 60px; padding-bottom: 60px; height: 100vh; flex-direction: column; background: var(--bg-color); }
+        .chat-header { padding: 15px; text-align: center; border-bottom: 1px solid var(--border-color); font-weight: bold; font-size: 18px; background: rgba(13, 6, 20, 0.8); }
+        .chat-messages { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+        .chat-message { background: rgba(255,255,255,0.1); padding: 10px 15px; border-radius: 15px; max-width: 80%; align-self: flex-start; word-wrap: break-word; }
+        .chat-message.self { background: var(--theme-color); color: black; align-self: flex-end; }
+        .chat-message.self .chat-sender { color: #333; }
+        .chat-sender { font-size: 11px; color: #ccc; margin-bottom: 3px; }
+        .chat-input-area { padding: 15px; border-top: 1px solid var(--border-color); display: flex; gap: 10px; background: rgba(13, 6, 20, 0.9); }
+        .chat-input-area input { margin-bottom: 0; flex: 1; }
+        .chat-send-btn { background: var(--theme-color); border: none; border-radius: 12px; padding: 0 20px; color: #000; font-weight: bold; cursor: pointer; }
+
+        #story-viewer { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; z-index: 6000; justify-content: center; align-items: center; }
+        #story-viewer img, #story-viewer video { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .story-close { cursor: pointer; font-size: 30px; font-weight: 300; }
+        .story-progress { position: absolute; top: 10px; left: 10px; right: 10px; height: 3px; background: rgba(255,255,255,0.3); z-index: 6001; border-radius: 2px; }
+        .story-progress-bar { height: 100%; background: white; width: 0%; border-radius: 2px; }
+
+        .story-top-bar { position: absolute; top: 25px; left: 15px; right: 15px; z-index: 6001; display: flex; justify-content: space-between; align-items: center; color: white; }
+        .story-stats { display: flex; gap: 15px; align-items: center; background: rgba(0,0,0,0.5); padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; backdrop-filter: blur(5px); }
+        .story-viewer-controls { position: absolute; bottom: 20px; left: 15px; right: 15px; z-index: 6001; display: flex; align-items: center; gap: 12px; }
+        .story-reply-input { flex: 1; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.3); border-radius: 25px; padding: 12px 20px; color: white; backdrop-filter: blur(5px); outline: none; }
+
+        .bottom-sheet { position: fixed; bottom: -100%; left: 0; width: 100%; max-height: 80vh; background: rgba(15, 10, 25, 0.75); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-radius: 20px 20px 0 0; z-index: 5500; transition: bottom 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; border-top: 1px solid rgba(255,255,255,0.15); box-shadow: 0 -5px 25px rgba(0,0,0,0.5); }
+        .bottom-sheet.open { bottom: 0; }
+        .sheet-header { padding: 15px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); font-weight: bold; position: relative; font-size: 16px; }
+        .sheet-close { position: absolute; right: 15px; top: 15px; cursor: pointer; font-size: 20px; line-height: 1; }
+        
+        .comments-list { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 15px; }
+        .comment-input-container { padding: 10px 15px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; gap: 10px; align-items: center; background: transparent; }
+        .comment-input-container input { margin-bottom: 0; flex: 1; padding: 10px 15px; border-radius: 20px; }
+        .comment-input-container button { background: transparent; color: var(--theme-color); border: none; font-weight: bold; cursor: pointer; font-size: 15px; }
+        
+        .comment-item { display: flex; justify-content: space-between; align-items: flex-start; }
+        .comment-user-pic { width: 32px; height: 32px; border-radius: 50%; margin-right: 10px; }
+        .comment-content { flex: 1; }
+        .comment-username { font-size: 12px; color: #aaa; margin-bottom: 3px; }
+        .comment-text { font-size: 14px; }
+        
+        .comment-actions-wrapper { display: flex; align-items: center; gap: 10px; position: relative; }
+        .comment-like-btn { cursor: pointer; color: #888; display: flex; align-items: center; gap: 4px; transition: 0.2s; }
+        .comment-like-btn.liked { color: var(--primary); }
+        .comment-actions-btn { cursor: pointer; padding: 0 5px; font-size: 18px; color: #888; }
+        .comment-menu { display: none; background: #222; padding: 5px; border-radius: 5px; position: absolute; right: 20px; top: 20px; border: 1px solid #444; z-index: 10; }
+        .comment-menu button { display: block; background: none; border: none; color: white; padding: 8px 15px; width: 100%; text-align: left; cursor: pointer; }
+        .comment-menu button:hover { background: #333; }
+
+        .edit-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 6000; justify-content: center; align-items: center; padding: 20px; }
+
+        .image-popup-view { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(5, 2, 10, 0.7); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); z-index: 9999; justify-content: center; align-items: center; cursor: pointer; }
+        .image-popup-view img { max-width: 85%; max-height: 75%; object-fit: contain; border-radius: 16px; box-shadow: 0 20px 50px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1); }
+        .image-popup-view.profile-cover-view img { width: 90%; height: auto; border-radius: 12px; }
+        .image-popup-view.profile-avatar-view img { width: 250px; height: 250px; border-radius: 50%; border: 4px solid var(--theme-color); }
+
+        #list-feed-page { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: var(--bg-color); z-index: 5200; overflow-y: scroll; scroll-snap-type: y mandatory; }
+        .list-feed-header { position: fixed; top: 0; left: 0; width: 100%; height: 60px; background: rgba(13,6,20,0.7); backdrop-filter: blur(10px); z-index: 5300; display: flex; align-items: center; padding: 0 15px; border-bottom: 1px solid var(--border-color); }
+        .list-feed-back-btn { background: none; border: none; color: white; font-size: 16px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+
+        .crop-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 8500; flex-direction: column; justify-content: center; align-items: center; padding: 15px; }
+        .crop-container-box { width: 100%; max-width: 500px; background: #120b1e; border-radius: 16px; border: 1px solid var(--glass-border); overflow: hidden; display: flex; flex-direction: column; }
+        .crop-box-header { padding: 15px; text-align: center; font-weight: bold; font-size: 16px; border-bottom: 1px solid rgba(255,255,255,0.08); color: #fff; }
+        .crop-workspace-area { width: 100%; height: 220px; position: relative; background: #000; overflow: hidden; cursor: move; }
+        .crop-target-image { position: absolute; top: 0; left: 0; transform-origin: top left; pointer-events: none; user-select: none; }
+        .crop-guide-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 2px dashed var(--theme-color); box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5); pointer-events: none; }
+        .crop-controls-zoom { padding: 15px; background: rgba(255,255,255,0.02); display: flex; align-items: center; gap: 10px; border-top: 1px solid rgba(255,255,255,0.05); }
+        .crop-slider-bar { flex: 1; -webkit-appearance: none; height: 5px; border-radius: 3px; background: #33234a; outline: none; }
+        .crop-slider-bar::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--theme-color); cursor: pointer; }
+        .crop-actions-footer { display: flex; border-top: 1px solid rgba(255,255,255,0.08); }
+        .crop-btn-item { flex: 1; padding: 14px; background: transparent; border: none; font-size: 14px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .crop-btn-cancel { color: #aaa; border-right: 1px solid rgba(255,255,255,0.08); }
+        .crop-btn-cancel:hover { background: rgba(255,255,255,0.03); }
+        .crop-btn-apply { color: var(--theme-color); }
+        .crop-btn-apply:hover { background: rgba(245, 197, 24, 0.08); }
+
+        .lang-option { display: flex; align-items: center; gap: 12px; padding: 14px 15px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.2s; font-size: 15px; }
+        .lang-option:hover { background: rgba(255,255,255,0.05); }
+        .lang-option svg { width: 22px; height: 22px; stroke: var(--theme-color); }
+        
+        .font-option { display:flex; align-items:center; padding:12px 15px; border-bottom:1px solid rgba(255,255,255,0.05); cursor:pointer; transition:0.2s; }
+        .font-option:hover { background:rgba(255,255,255,0.05); }
+
+        .creation-hub { background: rgba(13, 6, 20, 0.85); color: white; padding: 25px 20px; border-radius: 15px; max-width: 500px; margin: auto; border: 1px solid var(--glass-border); backdrop-filter: var(--glass-blur);}
+        .hub-header { text-align: center; font-size: 22px; font-weight: bold; margin-bottom: 25px; }
+        .hub-top-section { display: flex; gap: 15px; margin-bottom: 20px; }
+        .hub-video-preview { flex: 1; background: #000; border-radius: 12px; position: relative; display: flex; flex-direction: column; overflow: hidden; aspect-ratio: 9/16; max-height: 380px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); border: 2px dashed var(--theme-color); } 
+        #hub-preview-img { width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; background: linear-gradient(135deg, #2c1a4d, #1a0933); color: var(--theme-color); font-family: 'Grand Hotel', cursive; font-size: 32px; text-align: center; opacity: 0.8; box-shadow: inset 0 0 50px rgba(0,0,0,0.5); }
+        .hub-upload-icon-circle { background: var(--theme-color); color: #000; width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin-bottom: 15px; box-shadow: 0 0 20px rgba(245, 197, 24, 0.4); }
+        .hub-upload-text-large { font-family: 'Roboto', sans-serif; font-size: 16px; color: #fff; margin-bottom: 5px; }
+        .hub-upload-text-small { font-family: 'Roboto', sans-serif; font-size: 12px; color: #bbb; margin-bottom: 15px; }
+        .hub-upload-btn-main { background: var(--theme-color); color: #000; padding: 10px 20px; border: none; border-radius: 20px; font-family: 'Roboto', sans-serif; font-size: 14px; font-weight: bold; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(245, 197, 24, 0.3); }
+        .hub-upload-btn-main:hover { background: var(--theme-hover); box-shadow: 0 6px 20px rgba(245, 197, 24, 0.5); transform: translateY(-1px); }
+
+        .hub-playback-controls { position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; justify-content: center; gap: 25px; width: 100%; padding: 10px; background: linear-gradient(0deg, rgba(0,0,0,0.7) 0%, transparent 100%);}
+        .hub-progress-bar { width: 80%; height: 4px; background: rgba(255,255,255,0.3); border-radius: 2px; position: absolute; top: -5px; left: 10%;}
+        .hub-progress-fill { width: 35%; height: 100%; background: white; border-radius: 2px; position: relative;}
+        .hub-progress-thumb { width: 12px; height: 12px; background: white; border-radius: 50%; position: absolute; right: -6px; top: -4px; box-shadow: 0 0 5px rgba(0,0,0,0.5);}
+        .hub-controls-icons { display: flex; justify-content: center; align-items: center; gap: 25px; width: 100%; }
+        .hub-controls-icons svg { width: 20px; height: 20px; fill: white; cursor: pointer; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));}
+        .hub-upload-btn-overlay { background: rgba(0,0,0,0.8); padding: 12px; text-align: center; font-weight: bold; cursor: pointer; border-top: 1px solid rgba(255,255,255,0.1); margin-top: auto; z-index: 2; font-size: 14px;}
+        
+        .hub-tools-sidebar { display: flex; flex-direction: column; gap: 15px; width: 75px; }
+        .hub-tool-item { display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; }
+        .hub-tool-icon { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(245, 197, 24, 0.4); border-radius: 12px; width: 45px; height: 45px; display: flex; justify-content: center; align-items: center; color: var(--theme-color); transition: 0.3s; }
+        .hub-tool-item:hover .hub-tool-icon { background: rgba(255, 255, 255, 0.15); border-color: var(--theme-color); transform: translateY(-2px);}
+        .hub-tool-text { font-size: 10px; color: #ccc; text-align: center; line-height: 1.2; }
+
+        .hub-input-group { margin-bottom: 15px; display: flex; flex-direction: column; gap: 5px; position: relative;}
+        .hub-input-group input[type="text"], .hub-input-group textarea, .hub-input-group select { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; padding: 14px; color: white; width: 100%; font-size: 14px; transition: 0.3s;}
+        .hub-input-group input[type="text"]:focus, .hub-input-group textarea:focus { border-color: var(--theme-color); outline: none; background: rgba(255,255,255,0.08);}
+        
+        .hub-tags-section { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; margin-top: 5px;}
+        .hub-tag-chip { background: rgba(255,255,255,0.08); padding: 8px 14px; border-radius: 20px; font-size: 12px; color: #ddd; cursor: pointer; border: 1px solid rgba(255,255,255,0.1);}
+        .hub-tag-chip.active { background: rgba(255,255,255,0.15); border-color: transparent; color: white;}
+        
+        .hub-bottom-row { display: flex; justify-content: space-between; gap: 15px; align-items: flex-end; margin-bottom: 25px; }
+        .hub-change-file { background: transparent; border: 1px solid rgba(255,255,255,0.3); padding: 10px 15px; border-radius: 8px; color: #ddd; font-size: 13px; cursor: pointer; transition: 0.2s;}
+        .hub-change-file:hover { background: rgba(255,255,255,0.1); color: white;}
+        .hub-cover-select-box { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+        .hub-cover-img { width: 75px; height: 100px; border-radius: 8px; object-fit: cover; border: 1px solid rgba(255,255,255,0.2); cursor: pointer; }
+        
+        .hub-actions { display: flex; gap: 15px; align-items: center; margin-top: 10px; }
+        .hub-publish-btn { background: var(--theme-color); color: black; font-weight: bold; padding: 15px; border-radius: 12px; border: none; flex: 1; cursor: pointer; font-size: 15px; transition: 0.3s; box-shadow: 0 4px 15px rgba(245, 197, 24, 0.2);}
+        .hub-publish-btn:hover { background: var(--theme-hover); transform: translateY(-2px);}
+        .hub-draft-btn { background: transparent; color: var(--theme-color); font-weight: bold; border: none; cursor: pointer; padding: 10px; font-size: 14px; text-decoration: underline;}
+
+        .draggable-text-overlay {
+            position: absolute; transform: translate(-50%, -50%);
+            color: white; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            z-index: 10; cursor: move; user-select: none; white-space: nowrap;
+            background: rgba(0,0,0,0.3); padding: 5px 10px; border-radius: 8px;
+            border: 1px dashed rgba(255,255,255,0.5); display: none;
+        }
+
+        /* Requested warm yellow-orange-red theme and responsive feed refinements */
+        :root {
+            --bg-color: #ff8a00;
+            --text-color: #fffdf7;
+            --border-color: rgba(255, 255, 255, 0.22);
+            --theme-color: #ffd928;
+            --theme-hover: #ffb300;
+            --glass-bg: rgba(255, 102, 0, 0.20);
+            --glass-border: rgba(255, 238, 170, 0.35);
+            --ig-gradient: linear-gradient(45deg, #ffe52b 0%, #ff9a00 38%, #ff4b00 70%, #f52216 100%);
+        }
+        html { scroll-snap-type: y proximity; }
+        body {
+            height: auto;
+            min-height: 100vh;
+            min-height: 100dvh;
+            background: linear-gradient(135deg, #ffe62b 0%, #ff9b00 35%, #ff4b00 68%, #f51d16 100%);
+        }
+        #bg-canvas {
+            background: linear-gradient(135deg, #ffe62b 0%, #ff9b00 35%, #ff4b00 68%, #f51d16 100%);
+        }
+        .app-container { min-height: 100vh; min-height: 100dvh; }
+        .auth-screen {
+            min-height: 100vh;
+            min-height: 100dvh;
+            height: auto;
+            background: linear-gradient(135deg, #ffe62b 0%, #ff9b00 35%, #ff4b00 68%, #f51d16 100%);
+            overflow-y: auto;
+        }
+        .auth-container, .page-section, .profile-container, #chat-page {
+            color: #fffdf7;
+        }
+        .top-nav {
+            background: rgba(255, 119, 0, 0.82);
+            border-bottom-color: rgba(255,255,255,0.25);
+        }
+        .video-card {
+            height: calc(100vh - 60px);
+            height: calc(100dvh - 60px);
+            background: #170b08;
+        }
+        .video-card video { max-width: 100%; }
+        .video-card-long video { object-fit: contain !important; }
+        .video-card-short video { object-fit: cover; }
+        /* Desktop: Shorts are shown in a centered portrait player instead of stretching across the screen. */
+        @media (min-width: 768px) {
+            #feed-page { width: 100%; }
+            #video-display, #list-feed-display {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 22px;
+                padding: 20px 12px 80px;
+            }
+            .video-card-short {
+                width: min(100%, 420px);
+                height: min(78vh, 760px);
+                height: min(78dvh, 760px);
+                min-height: 480px;
+                border-radius: 18px;
+                border: 1px solid rgba(255,255,255,.25);
+            }
+            .video-card-long {
+                width: min(100%, 1000px);
+                height: auto;
+                aspect-ratio: 16 / 9;
+                min-height: 0;
+                border-radius: 14px;
+            }
+            .video-card-long video { width: 100%; height: 100%; }
+            .stories-tray { max-width: 1000px; margin: 0 auto; }
+        }
+        /* Mobile and narrow desktop-mode windows: fit the actual viewport and prevent horizontal overflow. */
+        @media (max-width: 767px) {
+            html, body { width: 100%; max-width: 100%; }
+            .video-card {
+                width: 100%;
+                height: calc(100vh - 60px);
+                height: calc(100dvh - 60px);
+                min-height: 360px;
+            }
+            .top-nav { padding-left: 12px; padding-right: 12px; }
+            .top-icons { gap: 12px; }
+            .page-section { padding-left: 12px; padding-right: 12px; }
+            .auth-screen { padding: max(12px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom)); }
+            .auth-container { max-height: calc(100vh - 24px); max-height: calc(100dvh - 24px); overflow-y: auto; }
+        }
+
+
+        /* Requested fixes: warm gradient controls, theme toggle, and centered comments sheet. */
+        :root { --warm-gradient: linear-gradient(110deg, #ffe52b 0%, #ff9800 42%, #ff4b00 75%, #f52216 100%); }
+        .btn:not(.btn-google):not(.btn-facebook), .hub-upload-btn-main, .hub-publish-btn, .edit-sheet-save.active, .chat-send-btn {
+            background: var(--warm-gradient) !important; color: #241006 !important; border-color: transparent;
+        }
+        #comment-bottom-sheet { bottom: auto; top: 50%; left: 50%; width: min(94vw, 620px); max-height: 76vh; max-height: 76dvh; height: min(70vh, 650px); border-radius: 20px; transform: translate(-50%, calc(100vh + 100%)); transition: transform .28s ease; }
+        #comment-bottom-sheet.open { bottom: auto; top: 50%; transform: translate(-50%, -50%); }
+        #comment-bottom-sheet .comments-list { min-height: 0; }
+        body.light-mode { --bg-color: #fff7e5; --text-color: #24150c; --border-color: rgba(110,55,0,.18); --glass-bg: rgba(255,255,255,.78); --glass-border: rgba(255,153,0,.35); background: #fff7e5; color: #24150c; }
+        body.light-mode .page-section, body.light-mode .profile-container, body.light-mode #chat-page { color: #24150c; }
+        body.light-mode .bottom-sheet { background: rgba(255,250,240,.97); color: #24150c; border-color: rgba(255,153,0,.35); }
+        body.light-mode .sheet-header, body.light-mode .comment-input-container { border-color: rgba(110,55,0,.15); }
+        body.light-mode input, body.light-mode textarea { background: rgba(255,255,255,.9); color: #24150c; }
+        body.light-mode .comment-text, body.light-mode .lang-option { color: #24150c; }
+        @media (max-width: 767px) { #comment-bottom-sheet { width: calc(100vw - 20px); height: min(72dvh, 650px); max-height: 78dvh; } }
+
+    </style>
+</head>
+<body>
+
+    <canvas id="bg-canvas"></canvas>
+
+    <div class="app-container">
+        <div id="auth-screen" class="auth-screen">
+            <div id="signup-box" class="auth-container">
+                <div class="auth-logo">SPACE</div>
+                <div class="auth-subtitle" data-i18n="welcome_back">Welcome Back</div>
+                <button class="btn btn-google" onclick="loginWithSocial('Google')">
+                    <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                    <span data-i18n="continue_google">Continue with Google</span>
+                </button>
+                <button class="btn btn-facebook" onclick="loginWithSocial('Facebook')">
+                    <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M22.675 0h-21.35C.597 0 0 .597 0 1.325v21.351C0 23.403.597 24 1.325 24H12.82v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116c.73 0 1.323-.597 1.323-1.324V1.325C24 .597 23.403 0 22.675 0z"/></svg>
+                    <span data-i18n="continue_fb">Continue with Facebook</span>
+                </button>
+                <p style="margin:0; color:rgba(255,255,255,.62); font-size:13px; line-height:1.5; text-align:center;">
+                    Sign in securely with your Google or Facebook account.
+                </p>
+            </div>
+        </div>
+
+        <header class="top-nav" id="top-nav">
+            <div class="logo">Motion Template</div>
+            <div class="top-icons">
+                <svg class="icon" onclick="openChat()" viewBox="0 0 24 24"><path d="M22 2L11 13"></path><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            </div>
+        </header>
+
+        <div id="feed-page">
+            <div class="stories-tray" id="stories-tray">
+                <input type="file" id="story-upload" accept="image/*,video/*" multiple style="display: none;" onchange="handleStoryUpload(event)">
+                <div class="story-item" id="my-story-container">
+                    <div class="story-ring add-story" id="my-story-ring" onclick="handleStoryRingClick()">
+                        <img src="https://via.placeholder.com/70" id="story-self-pic" class="story-img">
+                        <div class="story-add-icon" id="story-add-btn" onclick="event.stopPropagation(); document.getElementById('story-upload').click()">+</div>
+                    </div>
+                    <span class="story-name" data-i18n="your_story">Your story</span>
+                </div>
+            </div>
+            <div class="feed" id="video-display"></div>
+        </div>
+
+        <div id="upload-page" class="page-section" style="padding-top: 40px; padding-bottom: 80px;">
+            <div class="creation-hub">
+                <div class="hub-header">Creation Hub</div>
+                
+                <div class="hub-top-section">
+                    <div class="hub-video-preview" onclick="document.getElementById('v-file').click()">
+                        <div id="hub-preview-img">
+                            <div class="hub-upload-icon-circle">
+                                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+                            </div>
+                            <span class="hub-upload-text-large">Drag & drop your video here</span>
+                            <span class="hub-upload-text-small">or</span>
+                            <button class="hub-upload-btn-main" onclick="event.stopPropagation(); document.getElementById('v-file').click()">Choose from device</button>
+                        </div>
+                        <div id="upload-draggable-text" class="draggable-text-overlay" style="top:50%; left:50%; font-size:24px;"></div>
+                        <div class="hub-playback-controls">
+                            <div class="hub-progress-bar">
+                                <div class="hub-progress-fill"><div class="hub-progress-thumb"></div></div>
+                            </div>
+                            <div class="hub-controls-icons">
+                                <svg viewBox="0 0 24 24"><path d="M11 17l-5-5 5-5m7 10l-5-5 5-5"/></svg>
+                                <svg viewBox="0 0 24 24" style="width: 28px; height: 28px;"><path d="M10 8a1 1 0 00-1 1v6a1 1 0 001.555.832l4.8-3.6a1 1 0 000-1.664l-4.8-3.6A1 1 0 0010 8z"/></svg>
+                                <svg viewBox="0 0 24 24"><path d="M13 7l5 5-5 5M6 7l5 5-5 5"/></svg>
+                            </div>
+                        </div>
+                        <div class="hub-upload-btn-overlay">Upload Video</div>
+                    </div>
+
+                    <div class="hub-tools-sidebar">
+                        <div class="hub-tool-item">
+                            <div class="hub-tool-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>
+                            <span class="hub-tool-text">Add Music</span>
+                        </div>
+                        <div class="hub-tool-item">
+                            <div class="hub-tool-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10M18 20V4M6 20v-4"/></svg></div>
+                            <span class="hub-tool-text">Text/Filters</span>
+                        </div>
+                        <div class="hub-tool-item">
+                            <div class="hub-tool-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2" ry="2"/><path d="M7 15h10M7 11h4"/></svg></div>
+                            <span class="hub-tool-text">Auto-Captions</span>
+                        </div>
+                        <div class="hub-tool-item">
+                            <div class="hub-tool-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3v18M19 3v18M5 8h14M5 16h14"/></svg></div>
+                            <span class="hub-tool-text">Template Effects</span>
+                        </div>
+                        <div class="hub-tool-item" onclick="document.getElementById('v-cover-input').click()">
+                            <div class="hub-tool-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div>
+                            <span class="hub-tool-text">Cover Image Select</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hub-input-group">
+                    <input type="text" id="v-title" data-i18n-placeholder="title_ph" placeholder="Video Title">
+                </div>
+
+                <div class="hub-input-group">
+                    <span style="font-size:14px; color:#ddd;">Template Link</span>
+                    <input type="url" id="v-template-link" placeholder="Template Link (Optional)">
+                </div>
+                
+                <div class="hub-input-group">
+                    <span style="font-size:14px; color:#ddd;">Text Style & Overlay</span>
+                    <input type="text" id="v-text-overlay-input" placeholder="Type text here..." oninput="updateDraggableText('upload')">
+                    <div style="display:flex; gap:10px; margin-top:10px; align-items: center;">
+                        <button type="button" class="hub-publish-btn" style="flex:1; padding:10px; font-size:13px;" onclick="openFontSheet('upload')">Select Font Style</button>
+                        <div style="flex:1; display:flex; flex-direction:column;">
+                            <span style="font-size:11px; color:#bbb; margin-bottom:4px;">Text Size</span>
+                            <input type="range" id="v-text-size" min="10" max="100" value="24" oninput="updateDraggableText('upload')">
+                        </div>
+                    </div>
+                    <input type="hidden" id="v-font-family" value="Roboto">
+                </div>
+
+                <div class="hub-input-group" style="margin-bottom: 5px;">
+                    <span style="font-size:14px; color:#ddd;">Add Tags (e.g., #viral, #art, #dance)</span>
+                    <div class="hub-tags-section">
+                        <div class="hub-tag-chip active">Smart Tag</div>
+                        <div class="hub-tag-chip">#viral, #art</div>
+                        <div class="hub-tag-chip">#dance</div>
+                    </div>
+                    <input type="text" id="v-tags" data-i18n-placeholder="tags_ph" placeholder="Add tags (e.g: #viral, #fun)" style="display:none;">
+                </div>
+
+                <div class="hub-bottom-row">
+                    <div style="display:flex; flex-direction:column; gap:15px; flex:1;">
+                        <button class="hub-change-file" onclick="document.getElementById('v-file').click()">Change Video File</button>
+                        <select id="v-type">
+                            <option value="shorts">Shorts / Reels (9:16)</option>
+                            <option value="long">Long Video (16:9)</option>
+                        </select>
+                    </div>
+                    <div class="hub-cover-select-box">
+                        <span style="font-size:13px; color:#ddd;">Cover Image</span>
+                        <div style="position:relative;">
+                            <div id="v-hub-cover-preview" class="hub-cover-img" style="display: flex; flex-direction: column; justify-content: center; align-items: center; background: linear-gradient(45deg, #1a0933, #3d1b5c); color: var(--theme-color); font-family: 'Grand Hotel', cursive; font-size: 18px; text-align: center; border: 2px solid var(--theme-color); position: relative; overflow: hidden;" onclick="document.getElementById('v-cover-input').click()">
+                                <div style="position: absolute; top: -10px; right: -10px; width: 40px; height: 40px; background: var(--theme-color); opacity: 0.1; border-radius: 50%;"></div>
+                                <span>Select</span>
+                                <span>Cover</span>
+                                <div style="position: absolute; bottom: 5px; font-family: 'Roboto', sans-serif; font-size: 8px; color: #fff; opacity: 0.5;">COVER PAGE</div>
+                            </div>
+                            <div style="position:absolute; bottom:0; width:100%; background:rgba(0,0,0,0.7); text-align:center; font-size:11px; padding:4px 0; border-bottom-left-radius:6px; border-bottom-right-radius:6px; cursor:pointer;" onclick="document.getElementById('v-cover-input').click()">Select Cover</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hub-input-group">
+                    <span style="font-size:14px; color:#ddd;">Visibility Options</span>
+                    <select id="v-visibility" style="margin-top: 5px;">
+                        <option value="public">Public (Everyone can see)</option>
+                        <option value="unlisted">Unlisted (Only with link)</option>
+                    </select>
+                </div>
+
+                <div class="hub-input-group" style="margin-bottom: 20px;">
+                    <span style="font-size:14px; color:#ddd;">Schedule Video (Set Date & Time)</span>
+                    <input type="datetime-local" id="v-schedule" style="margin-top: 5px; color: white;">
+                </div>
+
+                <input type="file" id="v-file" accept="video/*" style="display:none;" onchange="handleVideoFileUpload(event)">
+                <input type="file" id="v-cover-input" accept="image/*" style="display:none;" onchange="handleCoverImageUpload(event)">
+
+                <div class="hub-actions">
+                    <button class="hub-publish-btn" onclick="uploadVideo()" data-i18n="publish_btn">Publish (Hold to Schedule)</button>
+                    <button class="hub-draft-btn">Save Draft</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="profile-page" class="page-section">
+            <div class="profile-container">
+                <div class="profile-cover-wrapper" id="profile-cover" onclick="openImagePopup(this.style.backgroundImage, true)">
+                    <div class="profile-header-actions">
+                        <div class="profile-menu-icon" onclick="event.stopPropagation(); openSettingsSheet();">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon" style="width: 22px; height: 22px;">
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-avatar-wrapper" onclick="openImagePopup(document.getElementById('display-pic').src, false)">
+                    <img id="display-pic" src="https://via.placeholder.com/100" class="profile-pic">
+                    <div class="verified-badge">✓</div>
+                </div>
+
+                <div class="profile-info-block">
+                    <h2 id="display-name">Your Name</h2>
+                    <p id="display-username">@username</p>
+                    <span id="display-gender">Male</span>
+                    <p id="display-bio">Write your awesome bio here...</p>
+                    
+                    <div class="profile-stats">
+                        <div class="stat-box"><strong id="post-count">0</strong><span>Posts</span></div>
+                        <div class="stat-box"><strong id="followers-count">0</strong><span>Followers</span></div>
+                        <div class="stat-box"><strong id="following-count">0</strong><span>Following</span></div>
+                    </div>
+
+                    <div class="profile-action-row">
+                        <button class="profile-btn-edit" onclick="openInstagramEditSheet()">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                            <span data-i18n="edit_profile">Edit Profile</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid-tabs-header">
+                    <div class="tab-title-item">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                        <span data-i18n="posts">POSTS</span>
+                    </div>
+                </div>
+
+                <div class="profile-video-grid" id="profile-video-grid"></div>
+            </div>
+        </div>
+
+        <div id="instagram-edit-sheet" class="instagram-edit-sheet">
+            <div class="edit-sheet-header">
+                <span class="edit-sheet-close" onclick="closeInstagramEditSheet()">&times;</span>
+                <div class="edit-sheet-title" data-i18n="edit_profile">Edit Profile</div>
+                <button id="edit-sheet-save-btn" class="edit-sheet-save" onclick="saveProfile()" data-i18n="save">Save</button>
+            </div>
+            <div class="edit-sheet-content">
+                <div class="edit-pfp-container" onclick="document.getElementById('pfp-input').click()">
+                    <img id="edit-pic-preview" src="https://via.placeholder.com/100" class="edit-pfp-preview">
+                    <div class="edit-pfp-overlay">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    </div>
+                </div>
+                <input type="file" id="pfp-input" accept="image/*" style="display: none;" onchange="previewProfilePic(event)">
+
+                <div class="input-field-group" style="margin-bottom: 25px;">
+                    <div class="input-field-label">Cover Photo</div>
+                    <button class="btn" style="background: rgba(255,255,255,0.1); color: white; padding: 10px; font-size: 13px;" onclick="document.getElementById('edit-cover-input').click()">Change Cover Photo</button>
+                    <input type="file" id="edit-cover-input" accept="image/*" style="display: none;" onchange="stagedCoverCrop(event)">
+                    <div id="edit-cover-preview-text" style="font-size:11px; color:#8e8e93; margin-top:5px; text-align:center;"></div>
+                </div>
+
+                <div class="input-field-group">
+                    <div class="input-field-label">Name</div>
+                    <input type="text" id="username" data-i18n-placeholder="name_ph" placeholder="Enter your name" oninput="checkProfileChanges()">
+                </div>
+
+                <div class="input-field-group">
+                    <div class="input-field-label">Username</div>
+                    <input type="text" id="insta-username" data-i18n-placeholder="username_ph" placeholder="Enter username (e.g: rakib_99)" oninput="checkProfileChanges()">
+                </div>
+
+                <div class="input-field-group">
+                    <div class="input-field-label">Gender</div>
+                    <select id="insta-gender" onchange="checkProfileChanges()">
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="input-field-group">
+                    <div class="input-field-label">Bio</div>
+                    <textarea id="bio" data-i18n-placeholder="bio_ph" placeholder="Write your awesome bio here..." style="height: 100px; resize: none;" oninput="checkProfileChanges()"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div id="chat-page">
+            <div class="chat-header">
+                <span style="float:left; cursor:pointer;" onclick="closeChat()" data-i18n="back">&#8592; Back</span>
+                <span data-i18n="global_chat">Global Chat</span>
+            </div>
+            <div class="chat-messages" id="chat-messages"></div>
+            <div class="chat-input-area">
+                <input type="text" id="chat-input" data-i18n-placeholder="type_message" placeholder="Type a message...">
+                <button class="chat-send-btn" onclick="sendMessage()" data-i18n="send">Send</button>
+            </div>
+        </div>
+
+        <div id="settings-bottom-sheet" class="bottom-sheet">
+            <div class="sheet-header" id="settings-header">
+                <span id="settings-back" style="display:none; position:absolute; left:15px; top:15px; cursor:pointer; font-size:18px;" onclick="showMainSettings()">&#8592;</span>
+                <span id="settings-title" data-i18n="settings">Settings</span>
+                <span class="sheet-close" onclick="closeSettingsSheet()">&times;</span>
+            </div>
+            
+            <div id="settings-main" style="padding: 15px; overflow-y: auto; display: flex; flex-direction: column; height: 100%;">
+                
+                <div class="lang-option" onclick="toggleThemeMode()" role="button" tabindex="0">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"></path></svg>
+                    <span id="theme-mode-label">Light Mode</span>
+                </div>
+
+                <div class="lang-option" onclick="showLanguageSettings()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                    <span data-i18n="language_menu">Language</span>
+                </div>
+
+                <div class="lang-option" onclick="openGenericFeed('saved')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+                    <span data-i18n="saved_videos">Saved Videos</span>
+                </div>
+
+                <div class="lang-option" onclick="openGenericFeed('liked')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                    <span data-i18n="liked_videos">Liked Videos</span>
+                </div>
+
+                <div style="margin-top: auto; padding-top: 20px; padding-bottom: 20px;">
+                    <button onclick="logoutApp()" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; background: transparent; color: #ff4d4d; border: none; font-size: 16px; font-weight: bold; cursor: pointer;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                        <span data-i18n="logout">Log Out</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="settings-language" style="display: none; padding: 15px; overflow-y: auto; flex-direction: column; height: 100%;">
+                <div class="lang-option" onclick="changeLanguage('en')">English (Default)</div>
+                <div class="lang-option" onclick="changeLanguage('bn')">বাংলা (Bengali)</div>
+                <div class="lang-option" onclick="changeLanguage('hi')">हिन्दी (Hindi)</div>
+            </div>
+        </div>
+        
+        <div id="font-bottom-sheet" class="bottom-sheet">
+            <div class="sheet-header">
+                <span>Select Text Style</span>
+                <span class="sheet-close" onclick="closeFontSheet()">&times;</span>
+            </div>
+            <div style="padding: 15px; overflow-y: auto; display: flex; flex-direction: column; height: 100%; padding-bottom:40px;">
+                <h4 style="margin-bottom:10px; color:var(--theme-color);">English Fonts</h4>
+                <div class="font-option" onclick="applyFont('Shojumaru Regular')">
+                    <span style="font-family:'Shojumaru Regular', sans-serif; font-size:18px; background:rgba(255,255,255,0.1); padding:4px 8px; border-radius:4px;">RK</span>
+                    <span style="margin-left:15px; font-size:14px;">Shojumaru Regular</span>
+                </div>
+                <div class="font-option" onclick="applyFont('GreziaDEMO- Regular')">
+                    <span style="font-family:'GreziaDEMO- Regular', sans-serif; font-size:18px; background:rgba(255,255,255,0.1); padding:4px 8px; border-radius:4px;">RK</span>
+                    <span style="margin-left:15px; font-size:14px;">GreziaDEMO- Regular</span>
+                </div>
+                <div class="font-option" onclick="applyFont('GERALDINE PERSONAL')">
+                    <span style="font-family:'GERALDINE PERSONAL', sans-serif; font-size:18px; background:rgba(255,255,255,0.1); padding:4px 8px; border-radius:4px;">RK</span>
+                    <span style="margin-left:15px; font-size:14px;">GERALDINE PERSONAL</span>
+                </div>
+                <div class="font-option" onclick="applyFont('Trailer Valentine')">
+                    <span style="font-family:'Trailer Valentine', sans-serif; font-size:18px; background:rgba(255,255,255,0.1); padding:4px 8px; border-radius:4px;">RK</span>
+                    <span style="margin-left:15px; font-size:14px;">Trailer Valentine</span>
+                </div>
+
+                <h4 style="margin-top:20px; margin-bottom:10px; color:var(--theme-color);">Bengali Fonts</h4>
+                <div class="font-option" onclick="applyFont('Li Subhashis Unicode')">
+                    <span style="font-family:'Li Subhashis Unicode', sans-serif; font-size:18px; background:rgba(255,255,255,0.1); padding:4px 8px; border-radius:4px;">RK</span>
+                    <span style="margin-left:15px; font-size:14px;">Li Subhashis Unicode</span>
+                </div>
+                <div class="font-option" onclick="applyFont('Li Sweet Arkopravo')">
+                    <span style="font-family:'Li Sweet Arkopravo', sans-serif; font-size:18px; background:rgba(255,255,255,0.1); padding:4px 8px; border-radius:4px;">RK</span>
+                    <span style="margin-left:15px; font-size:14px;">Li Sweet Arkopravo</span>
+                </div>
+                <div class="font-option" onclick="applyFont('Li Sabbir Ashalota 3')">
+                    <span style="font-family:'Li Sabbir Ashalota 3', sans-serif; font-size:18px; background:rgba(255,255,255,0.1); padding:4px 8px; border-radius:4px;">RK</span>
+                    <span style="margin-left:15px; font-size:14px;">Li Sabbir Ashalota 3</span>
+                </div>
+                <div class="font-option" onclick="applyFont('Li Byomgraphy')">
+                    <span style="font-family:'Li Byomgraphy', sans-serif; font-size:18px; background:rgba(255,255,255,0.1); padding:4px 8px; border-radius:4px;">RK</span>
+                    <span style="margin-left:15px; font-size:14px;">Li Byomgraphy</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="story-viewer">
+            <div class="story-progress"><div class="story-progress-bar" id="story-progress-bar"></div></div>
+            
+            <div class="story-top-bar">
+                <div class="story-stats" id="my-story-stats">
+                    <span id="story-views-count"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> <span id="v-count-num">0</span></span>
+                    <span id="story-likes-count"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> <span id="l-count-num">0</span></span>
+                </div>
+                
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div id="story-menu-trigger" onclick="toggleStoryOptions()" style="cursor: pointer; padding: 5px;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+                    </div>
+                    <span class="story-close" onclick="closeStory()">&times;</span>
+                </div>
+
+                <div id="story-options-menu" style="display: none; position: absolute; top: 40px; right: 40px; background: rgba(20,20,20,0.9); padding: 10px; border-radius: 8px; border: 1px solid #444;">
+                    <button onclick="deleteCurrentStory()" style="color: #ff4d4d; background: none; border: none; font-size: 14px; font-weight: bold; cursor: pointer;" data-i18n="delete_story">Delete Story</button>
+                </div>
+            </div>
+
+            <div id="story-content" style="width:100%; height:100%; display:flex; justify-content:center; align-items:center;"></div>
+            
+            <div id="story-viewer-controls" class="story-viewer-controls">
+                <input type="text" data-i18n-placeholder="send_message" placeholder="Send message..." class="story-reply-input">
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="white" stroke-width="2" style="cursor: pointer;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+            </div>
+        </div>
+
+        <div id="comment-bottom-sheet" class="bottom-sheet">
+            <div class="sheet-header">
+                <span data-i18n="comments">Comments</span>
+                <span class="sheet-close" onclick="closeComments()">&times;</span>
+            </div>
+            
+            <div class="comments-list" id="comments-list"></div>
+            <div class="comment-input-container">
+                <input type="text" id="new-comment-input" data-i18n-placeholder="write_comment" placeholder="Write your comment...">
+                <button onclick="postComment()" data-i18n="post">Post</button>
+            </div>
+        </div>
+
+        <div id="edit-video-modal" class="edit-modal">
+            <div class="creation-hub" style="width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto;">
+                <div class="hub-header" data-i18n="edit_video">Edit Video</div>
+                <input type="hidden" id="edit-v-id">
+
+                <div class="hub-top-section">
+                    <div class="hub-video-preview" id="edit-hub-preview-container" style="aspect-ratio: 9/16; position: relative;">
+                        <video id="edit-preview-video" style="width:100%; height:100%; object-fit:cover;" autoplay loop muted playsinline></video>
+                        <div id="edit-draggable-text" class="draggable-text-overlay" style="top:50%; left:50%; font-size:24px;"></div>
+                    </div>
+                </div>
+
+                <div class="hub-input-group">
+                    <input type="text" id="edit-v-title" data-i18n-placeholder="title_ph" placeholder="Video Title">
+                </div>
+
+                <div class="hub-input-group">
+                    <span style="font-size:14px; color:#ddd;">Text Style & Overlay</span>
+                    <input type="text" id="edit-v-text-overlay-input" placeholder="Type text here..." oninput="updateDraggableText('edit')">
+                    <div style="display:flex; gap:10px; margin-top:10px; align-items: center;">
+                        <button type="button" class="hub-publish-btn" style="flex:1; padding:10px; font-size:13px;" onclick="openFontSheet('edit')">Select Font Style</button>
+                        <div style="flex:1; display:flex; flex-direction:column;">
+                            <span style="font-size:11px; color:#bbb; margin-bottom:4px;">Text Size</span>
+                            <input type="range" id="edit-v-text-size" min="10" max="100" value="24" oninput="updateDraggableText('edit')">
+                        </div>
+                    </div>
+                    <input type="hidden" id="edit-v-font-family" value="Roboto">
+                    <span style="font-size:11px; color:#bbb; margin-top:5px;">* Type text, then drag it on the video preview to position it.</span>
+                </div>
+
+                <div class="hub-input-group">
+                    <input type="url" id="edit-v-template-link" data-i18n-placeholder="template_ph" placeholder="Template Link (Optional)">
+                </div>
+
+                <div class="hub-input-group">
+                    <input type="text" id="edit-v-tags" data-i18n-placeholder="tags_ph" placeholder="Add tags">
+                </div>
+
+                <div class="hub-bottom-row">
+                    <div style="display:flex; flex-direction:column; gap:15px; flex:1;">
+                        <span style="font-size:14px; color:#ddd;">Visibility</span>
+                        <select id="edit-v-visibility">
+                            <option value="public">Public</option>
+                            <option value="unlisted">Unlisted</option>
+                        </select>
+                    </div>
+                    <div class="hub-cover-select-box">
+                        <span style="font-size:13px; color:#ddd;">Cover Image</span>
+                        <div style="position:relative;">
+                            <img id="edit-v-cover-preview" class="hub-cover-img" src="https://via.placeholder.com/75x100?text=Cover" onclick="document.getElementById('edit-v-cover').click()">
+                            <div style="position:absolute; bottom:0; width:100%; background:rgba(0,0,0,0.7); text-align:center; font-size:11px; padding:4px 0; border-bottom-left-radius:6px; border-bottom-right-radius:6px; cursor:pointer;" onclick="document.getElementById('edit-v-cover').click()">Change</div>
+                        </div>
+                        <input type="file" id="edit-v-cover" accept="image/*" style="display:none;" onchange="handleEditCoverUpload(event)">
+                    </div>
+                </div>
+
+                <div style="display:flex; gap:10px; margin-top:20px;">
+                    <button class="hub-publish-btn" onclick="saveEditedVideo()" data-i18n="save">Save</button>
+                    <button class="hub-publish-btn" style="background:#444; color:white; box-shadow:none;" onclick="closeEditVideoModal()" data-i18n="cancel">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="list-feed-page">
+            <div class="list-feed-header">
+                <button class="list-feed-back-btn" onclick="closeGenericFeed()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                    <span id="list-feed-title" data-i18n="back">Back</span>
+                </button>
+            </div>
+            <div class="feed" id="list-feed-display" style="padding-top:60px;"></div>
+        </div>
+
+        <div id="image-popup-layer" class="image-popup-view" onclick="closeImagePopup()">
+            <img id="image-popup-content" src="" alt="View Box">
+        </div>
+
+        <div id="custom-crop-layer" class="crop-modal-overlay">
+            <div class="crop-container-box">
+                <div class="crop-box-header">Adjust Cover Photo Size</div>
+                <div class="crop-workspace-area" id="crop-workspace" onmousedown="startDragCrop(event)" ontouchstart="startDragCrop(event)">
+                    <img id="crop-preview-img" class="crop-target-image" src="" alt="Staged Crop Asset">
+                    <div class="crop-guide-overlay"></div>
+                </div>
+                <div class="crop-controls-zoom">
+                    <span style="font-size: 12px; color: #bbb;">Zoom:</span>
+                    <input type="range" id="crop-zoom-slider" class="crop-slider-bar" min="1" max="3" step="0.01" value="1" oninput="applyZoomUpdate()">
+                </div>
+                <div class="crop-actions-footer">
+                    <button class="crop-btn-item crop-btn-cancel" onclick="closeCropSystem()" data-i18n="cancel">Cancel</button>
+                    <button class="crop-btn-item crop-btn-apply" onclick="generateCroppedResult()">Apply Crop</button>
+                </div>
+            </div>
+        </div>
+
+        <nav class="bottom-nav" id="bottom-nav">
+            <div class="nav-item active" onclick="toggleSection('feed-page', this)"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 12h3v8h6v-6h2v6h6v-8h3L12 2z"/></svg></div>
+            <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
+            <div class="nav-item" onclick="toggleSection('upload-page', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg></div>
+            <div class="nav-item" onclick="toggleSection('profile-page', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>
+        </nav>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Supabase project connection (publishable key is intended for browser use).
+        const SUPABASE_URL = 'https://brjnqzqfvodupebffxih.supabase.co';
+        const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_5Eoi68ZvYBgimodfDX5G_Q_cSbuOxse';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, storage: window.localStorage } });
+        // --- TRANSLATION SYSTEM ---
+        const translations = {
+            'en': {
+                'welcome_back': 'Welcome Back', 'continue_google': 'Continue with Google', 'continue_fb': 'Continue with Facebook',
+                'or': 'OR', 'your_story': 'Your story', 'upload_video': 'Upload Video',
+                'select_file_msg': 'Select Video File:', 'publish_btn': 'Publish', 'name_default': 'Your Name', 'bio_default': 'Write your awesome bio here...',
+                'motion_template': 'MOTION TEMPLATE', 
+                'edit_profile': 'Edit Profile', 'posts': 'POSTS', 'save': 'Save', 'global_chat': 'Global Chat', 'send': 'Send', 'settings': 'Settings',
+                'language_menu': 'Language', 'logout': 'Log Out', 'delete_story': 'Delete Story', 'comments': 'Comments', 'post': 'Post', 'edit_video': 'Edit Video', 'cancel': 'Cancel', 'back': 'Back',
+                'saved_videos': 'Saved Videos', 'liked_videos': 'Liked Videos',
+                
+                'title_ph': 'Video Title', 'desc_ph': 'Description', 'tags_ph': 'Add tags (e.g: #viral, #fun)', 'template_ph': 'Template Link (Optional)',
+                'name_ph': 'Enter your name', 'username_ph': 'Enter username (e.g: rakib_99)', 'bio_ph': 'Write your awesome bio here...',
+                'type_message': 'Type a message...', 'send_message': 'Send message...', 'write_comment': 'Write your comment...',
+
+                'login_success': 'Login successful!', 'invalid_number': 'Please enter a valid mobile number.', 'wrong_password': 'Wrong password!',
+                'select_file_alert': 'Please select a video file', 'upload_success': 'Video uploaded successfully!', 
+                'delete_confirm': 'Are you sure you want to delete this video?', 'delete_success': 'Video deleted.', 'edit_success': 'Video edited successfully.',
+                'edit_comment': 'Edit comment:', 'story_limit_alert': 'You cannot add more than 5 stories.', 'story_added': 'Story added successfully!'
+            },
+            'bn': {
+                'welcome_back': 'আবার স্বাগতম', 'continue_google': 'গুগল দিয়ে চালিয়ে যান', 'continue_fb': 'ফেসবুক দিয়ে চালিয়ে যান',
+                'or': 'অথবা', 'your_story': 'আপনার স্টোরি', 'upload_video': 'ভিডিও আপলোড করুন',
+                'select_file_msg': 'ভিডিও ফাইল সিলেক্ট করুন:', 'publish_btn': 'পাবলিশ করুন', 'name_default': 'আপনার নাম', 'bio_default': 'আপনার চমৎকার বায়ো এখানে লিখুন...',
+                'motion_template': 'মোশন টেমপ্লেট',
+                'edit_profile': 'এডিট প্রোফাইল', 'posts': 'পোস্ট সমূহ', 'save': 'সেভ', 'global_chat': 'গ্লোবাল চ্যাট', 'send': 'সেন্ড', 'settings': 'সেটিংস',
+                'language_menu': 'ভাষা পরিবর্তন (Language)', 'logout': 'লগ আউট', 'delete_story': 'স্টোরি মুছুন', 'comments': 'কমেন্টস', 'post': 'পোস্ট', 'edit_video': 'ভিডিও এডিট করুন', 'cancel': 'বাতিল', 'back': 'ফিরে যান',
+                'saved_videos': 'সেভ করা ভিডিও', 'liked_videos': 'লাইক করা ভিডিও',
+                
+                'title_ph': 'ভিডিওর টাইটেল', 'desc_ph': 'ডেসক্রিপশন', 'tags_ph': 'ট্যাগ দিন (যেমন: #viral, #fun)', 'template_ph': 'টেমপ্লেট লিংক দিন (ঐচ্ছিক)',
+                'name_ph': 'আপনার নাম লিখুন', 'username_ph': 'ইউজারনেম দিন (যেমন: rakib_99)', 'bio_ph': 'আপনার চমৎকার বায়ো এখানে লিখুন...',
+                'type_message': 'মেসেজ লিখুন...', 'send_message': 'মেসেজ পাঠান...', 'write_comment': 'আপনার কমেন্ট লিখুন...',
+
+                'login_success': 'লগইন সফল হয়েছে!', 'invalid_number': 'দয়া করে সঠিক মোবাইল নাম্বার প্রদান করুন।', 'wrong_password': 'ভুল পাসওয়ার্ড!',
+                'select_file_alert': 'দয়া করে একটি ভিডিও ফাইল সিলেক্ট করুন', 'upload_success': 'ভিডিও আপলোড সফল হয়েছে!', 
+                'delete_confirm': 'আপনি কি নিশ্চিত এই ভিডিওটি ডিলিট করতে চান?', 'delete_success': 'ভিডিও ডিলিট করা হয়েছে।', 'edit_success': 'ভিডিও এডিট সফল হয়েছে।',
+                'edit_comment': 'কমেন্ট এডিট করুন:', 'story_limit_alert': 'আপনি ৫টির বেশি স্ট্যাটাস আপলোড করতে পারবেন না।', 'story_added': 'আপনার স্টোরি যুক্ত হয়েছে!'
+            },
+            'hi': {
+                'welcome_back': 'वापसी पर स्वागत है', 'continue_google': 'Google के साथ जारी रखें', 'continue_fb': 'Facebook के साथ जारी रखें',
+                'or': 'या', 'your_story': 'आपकी स्टोरी', 'upload_video': 'वीडियो अपलोड करें',
+                'select_file_msg': 'वीडियो फ़ाइल चुनें:', 'publish_btn': 'प्रकाशित करें', 'name_default': 'आपका नाम', 'bio_default': 'अपना शानदार बायो यहाँ लिखें...',
+                'motion_template': 'मोशन टेम्पलेट',
+                'edit_profile': 'प्रोफ़ाइल संपादित करें', 'posts': 'पोस्ट', 'save': 'सेव', 'global_chat': 'ग्लोबल चैट', 'send': 'भेजें', 'settings': 'सेटिंग्स',
+                'language_menu': 'भाषा (Language)', 'logout': 'लॉग आउट', 'delete_story': 'स्टोरी डिलीट करें', 'comments': 'टिप्पणियाँ', 'post': 'पोस्ट', 'edit_video': 'वीडियो एडिट करें', 'cancel': 'रद्द करें', 'back': 'वापस',
+                'saved_videos': 'सेव किए गए वीडियो', 'liked_videos': 'लाइक किए गए वीडियो',
+                'title_ph': 'वीडियो का शीर्षक', 'desc_ph': 'विवरण', 'tags_ph': 'टैग जोड़ें', 'template_ph': 'टेम्पलेट लिंक',
+                'name_ph': 'अपना नाम दर्ज करें', 'username_ph': 'यूज़रनेम दर्ज करें', 'bio_ph': 'अपना शानदार बायो यहाँ लिखें...',
+                'type_message': 'एक संदेश टाइप करें...', 'send_message': 'संदेश भेजें...', 'write_comment': 'अपनी टिप्पणी लिखें...',
+
+                'login_success': 'लॉगिन सफल!', 'invalid_number': 'कृपया एक वैध मोबाइल नंबर दर्ज करें।', 'wrong_password': 'गलत पासवर्ड!',
+                'select_file_alert': 'कृपया एक वीडियो फ़ाइल चुनें', 'upload_success': 'वीडियो सफलतापूर्वक अपलोड हुआ!', 
+                'delete_confirm': 'क्या आप वाकई इस वीडियो को हटाना चाहते हैं?', 'delete_success': 'वीडियो हटाया गया।', 'edit_success': 'वीडियो संपादित किया गया।',
+                'edit_comment': 'टिप्पणी संपादित करें:', 'story_limit_alert': 'आप 5 से अधिक स्टोरी नहीं जोड़ सकते हैं।', 'story_added': 'स्टोरी सफलतापूर्वक जोड़ी गई!'
+            }
+        };
+
+        function getTranslation(key) {
+            const currentLang = localStorage.getItem('vibenet_lang') || 'en';
+            return translations[currentLang][key] || translations['en'][key];
+        }
+
+        function changeLanguage(lang) {
+            localStorage.setItem('vibenet_lang', lang);
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    el.innerText = translations[lang][key];
+                }
+            });
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (translations[lang] && translations[lang][key]) {
+                    el.placeholder = translations[lang][key];
+                }
+            });
+            showMainSettings();
+        }
+
+        const savedLangInit = localStorage.getItem('vibenet_lang') || 'en';
+        changeLanguage(savedLangInit);
+
+        // --- HISTORY API / BACK BUTTON SYSTEM ---
+        history.replaceState({ page: 'home' }, "");
+        function pushStateIfNotHome() {
+            if (history.state && history.state.page === 'away') return;
+            history.pushState({ page: 'away' }, "");
+        }
+
+        window.addEventListener('popstate', function(e) {
+            let overlayClosed = false;
+            if (document.getElementById('image-popup-layer').style.display === 'flex') { closeImagePopup(); overlayClosed = true; }
+            if (document.getElementById('custom-crop-layer').style.display === 'flex') { closeCropSystem(); overlayClosed = true; }
+            if (document.getElementById('edit-video-modal').style.display === 'flex') { closeEditVideoModal(); overlayClosed = true; }
+            if (document.getElementById('instagram-edit-sheet').classList.contains('open')) { closeInstagramEditSheet(); overlayClosed = true; }
+            if (document.getElementById('settings-bottom-sheet').classList.contains('open')) { closeSettingsSheet(); overlayClosed = true; }
+            if (document.getElementById('font-bottom-sheet').classList.contains('open')) { closeFontSheet(); overlayClosed = true; }
+            if (document.getElementById('comment-bottom-sheet').classList.contains('open')) { closeComments(); overlayClosed = true; }
+            if (document.getElementById('story-viewer').style.display === 'flex') { closeStory(); overlayClosed = true; }
+            if (document.getElementById('list-feed-page').style.display === 'block' || document.getElementById('list-feed-page').style.display === 'flex') { closeGenericFeed(); overlayClosed = true; }
+            
+            if (overlayClosed) {
+                if (document.getElementById('feed-page').style.display === 'none') { history.pushState({ page: 'away' }, ""); }
+                return;
+            }
+            if (document.getElementById('feed-page').style.display === 'none' || document.getElementById('feed-page').style.display === '') {
+                silentGoHome();
+            }
+        });
+
+        function silentGoHome() {
+            document.querySelectorAll('video').forEach(vid => { vid.pause(); vid.currentTime = 0; });
+            document.getElementById('upload-page').style.display = 'none';
+            document.getElementById('profile-page').style.display = 'none';
+            document.getElementById('chat-page').style.display = 'none';
+            document.getElementById('list-feed-page').style.display = 'none';
+            document.getElementById('feed-page').style.display = 'block';
+            document.getElementById('top-nav').style.display = 'flex';
+            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+            document.querySelectorAll('.nav-item')[0].classList.add('active');
+            handleVideoScroll();
+        }
+
+        // Cinematic Plexus/Nodes Animation Logic
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let points = [];
+        const maxPoints = 55;
+        const maxDistance = 110;
+        function initCanvas() {
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            points = [];
+            for (let i = 0; i < maxPoints; i++) {
+                points.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, vx: (Math.random() - 0.5) * 0.6, vy: (Math.random() - 0.5) * 0.6, radius: Math.random() * 2 + 1.5 });
+            }
+        }
+        function drawAnimation() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < points.length; i++) {
+                let p1 = points[i];
+                p1.x += p1.vx; p1.y += p1.vy;
+                if (p1.x < 0 || p1.x > canvas.width) p1.vx *= -1;
+                if (p1.y < 0 || p1.y > canvas.height) p1.vy *= -1;
+                ctx.fillStyle = 'rgba(245, 197, 24, 0.4)'; ctx.beginPath();
+                ctx.arc(p1.x, p1.y, p1.radius, 0, Math.PI * 2); ctx.fill();
+                for (let j = i + 1; j < points.length; j++) {
+                    let p2 = points[j];
+                    let dist = Math.hypot(p1.x - p2.x, p1.y - p2.y);
+                    if (dist < maxDistance) {
+                        let alpha = (1 - dist / maxDistance) * 0.18;
+                        ctx.strokeStyle = `rgba(245, 197, 24, ${alpha})`; ctx.lineWidth = 0.8;
+                        ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(drawAnimation);
+        }
+        window.addEventListener('resize', initCanvas); initCanvas(); drawAnimation();
+        
+        // --- IndexedDB Setup ---
+        let db;
+        const requestDB = indexedDB.open("VibeNetDB", 3);
+        requestDB.onupgradeneeded = function(event) {
+            db = event.target.result;
+            if(!db.objectStoreNames.contains("videos")) { db.createObjectStore("videos", { keyPath: "id", autoIncrement: true }); }
+            if(!db.objectStoreNames.contains("stories")) { db.createObjectStore("stories", { keyPath: "id" }); }
+        };
+        requestDB.onsuccess = function(event) { db = event.target.result; loadVideosFromDB(); };
+        requestDB.onerror = function(event) { console.error("Database error: " + event.target.errorCode); };
+        
+        window.addEventListener('DOMContentLoaded', () => {
+            history.replaceState({ page: 'home' }, "");
+            loadProfileData();
+            loadChats();
+            setInterval(loadChats, 2000);
+            const following = document.getElementById('following-count');
+            const followers = document.getElementById('followers-count');
+            if (following) following.innerText = localStorage.getItem('vibenet_following') || '0';
+            if (followers) followers.innerText = localStorage.getItem('vibenet_followers') || '0';
+        });
+
+        async function updateAuthScreen() {
+            const { data, error } = await supabaseClient.auth.getSession();
+            if (error) console.error('Supabase session error:', error.message);
+            const loggedIn = !!data?.session;
+            const authScreen = document.getElementById('auth-screen');
+            if (authScreen) authScreen.style.display = loggedIn ? 'none' : 'flex';
+            if (loggedIn) setTimeout(() => { if (typeof handleVideoScroll === 'function') handleVideoScroll(); }, 100);
+        }
+        window.addEventListener('load', updateAuthScreen);
+        supabaseClient.auth.onAuthStateChange((_event, session) => {
+            const authScreen = document.getElementById('auth-screen');
+            if (authScreen) authScreen.style.display = session ? 'none' : 'flex';
+            if (session) setTimeout(() => { if (typeof handleVideoScroll === 'function') handleVideoScroll(); }, 100);
+        });
+
+        async function loginWithSocial(platform) {
+            const provider = String(platform || '').toLowerCase();
+            if (!['google', 'facebook'].includes(provider)) return;
+
+            // OAuth needs an HTTP(S) website URL; file:// pages cannot be valid OAuth redirect URLs.
+            if (!['http:', 'https:'].includes(window.location.protocol)) {
+                alert('Google/Facebook login cannot complete from a directly opened file:// HTML. Run this site through localhost or publish it on HTTPS (for example GitHub Pages), then add that site URL to Supabase Auth URL Configuration.');
+                return;
+            }
+
+            const button = document.querySelector(provider === 'google' ? '.btn-google' : '.btn-facebook');
+            if (button) { button.disabled = true; button.style.opacity = '0.7'; }
+            try {
+                const redirectTo = window.location.origin + window.location.pathname;
+                const { error } = await supabaseClient.auth.signInWithOAuth({
+                    provider,
+                    options: { redirectTo }
+                });
+                if (error) alert(platform + ' login failed: ' + error.message + '\nCheck that this provider is enabled in Supabase Authentication and its OAuth credentials are configured.');
+            } catch (err) {
+                alert(platform + ' login error: ' + (err?.message || String(err)));
+            } finally {
+                if (button) { button.disabled = false; button.style.opacity = ''; }
+            }
+        }
+
+        function applyThemeMode(mode) {
+            const normalized = mode === 'light' ? 'light' : 'dark';
+            document.body.classList.toggle('light-mode', normalized === 'light');
+            localStorage.setItem('rk_video_theme_mode', normalized);
+            const label = document.getElementById('theme-mode-label');
+            if (label) label.textContent = normalized === 'dark' ? 'Light Mode' : 'Dark Mode';
+        }
+        function toggleThemeMode() {
+            applyThemeMode(document.body.classList.contains('light-mode') ? 'dark' : 'light');
+        }
+        document.addEventListener('DOMContentLoaded', () => applyThemeMode(localStorage.getItem('rk_video_theme_mode') || 'dark'));
+
+        // --- Settings Logic ---
+        function openSettingsSheet() {
+            pushStateIfNotHome();
+            showMainSettings();
+            document.getElementById('settings-bottom-sheet').classList.add('open');
+        }
+        function closeSettingsSheet() {
+            document.getElementById('settings-bottom-sheet').classList.remove('open');
+        }
+        
+        function showLanguageSettings() {
+            document.getElementById('settings-main').style.display = 'none';
+            document.getElementById('settings-language').style.display = 'flex';
+            document.getElementById('settings-title').innerText = getTranslation('language_menu');
+            document.getElementById('settings-back').style.display = 'block';
+        }
+
+        function showMainSettings() {
+            document.getElementById('settings-main').style.display = 'flex';
+            document.getElementById('settings-language').style.display = 'none';
+            document.getElementById('settings-title').innerText = getTranslation('settings');
+            document.getElementById('settings-back').style.display = 'none';
+        }
+
+        async function logoutApp() {
+            const { error } = await supabaseClient.auth.signOut();
+            if (error) alert('Sign out failed: ' + error.message);
+            window.location.reload();
+        }
+
+        function toggleSection(id, element) {
+            if (id !== 'feed-page') pushStateIfNotHome();
+            document.querySelectorAll('video').forEach(vid => { vid.pause(); vid.currentTime = 0; });
+            document.getElementById('feed-page').style.display = 'none'; document.getElementById('upload-page').style.display = 'none';
+            document.getElementById('profile-page').style.display = 'none'; document.getElementById('chat-page').style.display = 'none';
+            document.getElementById('list-feed-page').style.display = 'none'; document.getElementById(id).style.display = 'flex';
+            
+            if(id !== 'chat-page' && id !== 'profile-page') document.getElementById(id).style.display = 'block';
+            if(id === 'feed-page') { document.getElementById('top-nav').style.display = 'flex'; handleVideoScroll(); } 
+            else if(id !== 'chat-page') { document.getElementById('top-nav').style.display = 'none'; }
+            
+            if(id === 'profile-page') loadProfileVideos();
+            if(element) { document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active')); element.classList.add('active'); }
+        }
+
+        function openImagePopup(sourceStr, isCover) {
+            let cleanUrl = sourceStr;
+            if(sourceStr.startsWith('url(')) { cleanUrl = sourceStr.replace(/^url\(['"]?/, '').replace(/['"]?\)$/, ''); }
+            if(!cleanUrl || cleanUrl.includes('via.placeholder.com') || cleanUrl.includes('placehold.co') || cleanUrl === "") return;
+            pushStateIfNotHome();
+            const popupLayer = document.getElementById('image-popup-layer'); const popupImg = document.getElementById('image-popup-content');
+            popupLayer.className = "image-popup-view " + (isCover ? "profile-cover-view" : "profile-avatar-view");
+            popupImg.src = cleanUrl; popupLayer.style.display = 'flex';
+        }
+        function closeImagePopup() { document.getElementById('image-popup-layer').style.display = 'none'; }
+
+        let originalProfileData = {}; let temporaryCoverDataUrl = null;
+        function openInstagramEditSheet() {
+            pushStateIfNotHome();
+            originalProfileData = {
+                name: document.getElementById('display-name').innerText, username: document.getElementById('display-username').innerText.replace('@', ''),
+                gender: document.getElementById('display-gender').innerText, bio: document.getElementById('display-bio').innerText,
+                pic: document.getElementById('display-pic').src, cover: localStorage.getItem('vibenet_profile_cover') || ''
+            };
+            document.getElementById('username').value = originalProfileData.name; document.getElementById('insta-username').value = originalProfileData.username;
+            document.getElementById('insta-gender').value = originalProfileData.gender; document.getElementById('bio').value = originalProfileData.bio;
+            document.getElementById('edit-pic-preview').src = originalProfileData.pic;
+            document.getElementById('edit-cover-preview-text').innerText = originalProfileData.cover ? "Cover photo selected" : "No custom cover image";
+            temporaryCoverDataUrl = originalProfileData.cover;
+            document.getElementById('edit-sheet-save-btn').classList.remove('active');
+            document.getElementById('instagram-edit-sheet').classList.add('open');
+        }
+        function closeInstagramEditSheet() { document.getElementById('instagram-edit-sheet').classList.remove('open'); }
+
+        function previewProfilePic(event) {
+            const file = event.target.files[0];
+            if(file) { const reader = new FileReader(); reader.onload = function(e) { document.getElementById('edit-pic-preview').src = e.target.result; checkProfileChanges(); }; reader.readAsDataURL(file); }
+        }
+
+        let cropState = { imgElement: null, workspace: null, isDragging: false, startX: 0, startY: 0, imgX: 0, imgY: 0, currentZoom: 1, originalWidth: 0, originalHeight: 0 };
+        function stagedCoverCrop(event) {
+            const file = event.target.files[0]; if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                pushStateIfNotHome();
+                const cropModal = document.getElementById('custom-crop-layer'); const cropImg = document.getElementById('crop-preview-img'); const zoomSlider = document.getElementById('crop-zoom-slider');
+                cropImg.src = e.target.result; cropImg.style.transform = `translate(0px, 0px) scale(1)`;
+                zoomSlider.value = 1;
+                cropState.imgElement = cropImg; cropState.workspace = document.getElementById('crop-workspace'); cropState.isDragging = false; cropState.imgX = 0; cropState.imgY = 0;
+                cropState.currentZoom = 1;
+                cropImg.onload = function() {
+                    let wsWidth = cropState.workspace.clientWidth;
+                    let wsHeight = cropState.workspace.clientHeight;
+                    let imgRatio = cropImg.naturalWidth / cropImg.naturalHeight; let wsRatio = wsWidth / wsHeight;
+                    if (imgRatio > wsRatio) { cropImg.style.height = wsHeight + 'px'; cropImg.style.width = (wsHeight * imgRatio) + 'px'; } 
+                    else { cropImg.style.width = wsWidth + 'px'; cropImg.style.height = (wsWidth / imgRatio) + 'px'; }
+                    cropState.originalWidth = parseFloat(cropImg.style.width);
+                    cropState.originalHeight = parseFloat(cropImg.style.height);
+                };
+                cropModal.style.display = 'flex';
+            }; reader.readAsDataURL(file);
+        }
+
+        function startDragCrop(e) {
+            e.preventDefault();
+            cropState.isDragging = true;
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX; const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            cropState.startX = clientX - cropState.imgX; cropState.startY = clientY - cropState.imgY;
+            if(!e.touches) { window.addEventListener('mousemove', dragCropAction); window.addEventListener('mouseup', stopDragCrop); } 
+            else { window.addEventListener('touchmove', dragCropAction, { passive: false }); window.addEventListener('touchend', stopDragCrop); }
+        }
+        function dragCropAction(e) {
+            if (!cropState.isDragging) return;
+            if (e.cancelable) e.preventDefault();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX; const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            let newX = clientX - cropState.startX; let newY = clientY - cropState.startY;
+            let zoomedWidth = cropState.originalWidth * cropState.currentZoom;
+            let zoomedHeight = cropState.originalHeight * cropState.currentZoom;
+            let wsWidth = cropState.workspace.clientWidth; let wsHeight = cropState.workspace.clientHeight;
+            let minX = wsWidth - zoomedWidth;
+            let minY = wsHeight - zoomedHeight;
+            
+            if (minX < 0) { if (newX > 0) newX = 0; if (newX < minX) newX = minX; } else { newX = 0; }
+            if (minY < 0) { if (newY > 0) newY = 0; if (newY < minY) newY = minY; } else { newY = 0; }
+            
+            cropState.imgX = newX;
+            cropState.imgY = newY;
+            cropState.imgElement.style.transform = `translate(${newX}px, ${newY}px) scale(${cropState.currentZoom})`;
+        }
+        function stopDragCrop() { cropState.isDragging = false; window.removeEventListener('mousemove', dragCropAction); window.removeEventListener('mouseup', stopDragCrop); window.removeEventListener('touchmove', dragCropAction); window.removeEventListener('touchend', stopDragCrop); }
+        
+        function applyZoomUpdate() {
+            const slider = document.getElementById('crop-zoom-slider');
+            cropState.currentZoom = parseFloat(slider.value);
+            let zoomedWidth = cropState.originalWidth * cropState.currentZoom; let zoomedHeight = cropState.originalHeight * cropState.currentZoom;
+            let wsWidth = cropState.workspace.clientWidth;
+            let wsHeight = cropState.workspace.clientHeight;
+            let minX = wsWidth - zoomedWidth; let minY = wsHeight - zoomedHeight;
+            if (cropState.imgX < minX) cropState.imgX = minX; if (cropState.imgY < minY) cropState.imgY = minY;
+            if (cropState.imgX > 0 || minX >= 0) cropState.imgX = 0;
+            if (cropState.imgY > 0 || minY >= 0) cropState.imgY = 0;
+            cropState.imgElement.style.transform = `translate(${cropState.imgX}px, ${cropState.imgY}px) scale(${cropState.currentZoom})`;
+        }
+
+        function generateCroppedResult() {
+            const canvasObj = document.createElement('canvas');
+            const ctxObj = canvasObj.getContext('2d');
+            let wsWidth = cropState.workspace.clientWidth; let wsHeight = cropState.workspace.clientHeight;
+            canvasObj.width = wsWidth * 2;
+            canvasObj.height = wsHeight * 2; ctxObj.scale(2, 2);
+            let renderWidth = cropState.originalWidth * cropState.currentZoom; let renderHeight = cropState.originalHeight * cropState.currentZoom;
+            ctxObj.drawImage(cropState.imgElement, cropState.imgX, cropState.imgY, renderWidth, renderHeight);
+            temporaryCoverDataUrl = canvasObj.toDataURL('image/jpeg', 0.9);
+            document.getElementById('edit-cover-preview-text').innerText = "New cropped cover photo staged (unsaved)";
+            closeCropSystem(); checkProfileChanges();
+        }
+        function closeCropSystem() { document.getElementById('custom-crop-layer').style.display = 'none'; document.getElementById('edit-cover-input').value = ""; }
+
+        function checkProfileChanges() {
+            const currentName = document.getElementById('username').value;
+            const currentUsername = document.getElementById('insta-username').value;
+            const currentGender = document.getElementById('insta-gender').value; const currentBio = document.getElementById('bio').value;
+            const currentPic = document.getElementById('edit-pic-preview').src; const currentCover = temporaryCoverDataUrl;
+            const saveBtn = document.getElementById('edit-sheet-save-btn');
+            if(currentName !== originalProfileData.name || currentUsername !== originalProfileData.username || currentGender !== originalProfileData.gender || currentBio !== originalProfileData.bio || currentPic !== originalProfileData.pic || currentCover !== originalProfileData.cover) { saveBtn.classList.add('active'); } 
+            else { saveBtn.classList.remove('active'); }
+        }
+
+        function saveProfile() {
+            const saveBtn = document.getElementById('edit-sheet-save-btn');
+            if(!saveBtn.classList.contains('active')) return;
+            const name = document.getElementById('username').value || getTranslation('name_default'); 
+            const username = document.getElementById('insta-username').value || "username";
+            const gender = document.getElementById('insta-gender').value;
+            const bio = document.getElementById('bio').value || getTranslation('bio_default');
+            const picSrc = document.getElementById('edit-pic-preview').src;
+            let profileData = { name: name, username: username, gender: gender, bio: bio, pic: picSrc };
+            applyProfileData(profileData); localStorage.setItem('vibenet_profile', JSON.stringify(profileData));
+            if(temporaryCoverDataUrl) { localStorage.setItem('vibenet_profile_cover', temporaryCoverDataUrl); document.getElementById('profile-cover').style.backgroundImage = `url('${temporaryCoverDataUrl}')`; }
+
+            if(db) {
+                const transaction = db.transaction(["videos"], "readwrite");
+                const store = transaction.objectStore("videos"); const request = store.openCursor();
+                request.onsuccess = function(event) {
+                    const cursor = event.target.result;
+                    if(cursor) { const video = cursor.value; if(video.isOwnVideo) { video.uploaderName = profileData.name; video.uploaderPic = profileData.pic; cursor.update(video); } cursor.continue(); } 
+                    else { loadVideosFromDB(); }
+                };
+            }
+            closeInstagramEditSheet();
+        }
+
+        function loadProfileData() {
+            let data = JSON.parse(localStorage.getItem('vibenet_profile'));
+            if(data) { applyProfileData(data); } 
+            else { 
+                let defaultData = { name: getTranslation('name_default'), username: "username", gender: "Male", bio: getTranslation('bio_default'), pic: "https://via.placeholder.com/100" };
+                applyProfileData(defaultData); 
+            }
+            const savedCover = localStorage.getItem('vibenet_profile_cover');
+            if(savedCover) { document.getElementById('profile-cover').style.backgroundImage = `url('${savedCover}')`; }
+        }
+
+        function applyProfileData(data) {
+            document.getElementById('display-name').innerText = data.name;
+            document.getElementById('display-username').innerText = "@" + (data.username || "username");
+            document.getElementById('display-gender').innerText = data.gender || "Male"; 
+            document.getElementById('display-bio').innerText = data.bio;
+            document.getElementById('display-pic').src = data.pic;
+            document.getElementById('story-self-pic').src = data.pic;
+        }
+
+        function handleVideoFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const videoUrl = URL.createObjectURL(file);
+            const previewImg = document.getElementById('hub-preview-img');
+            const isImgElement = previewImg.tagName.toLowerCase() === 'img';
+            const videoType = document.getElementById('v-type').value;
+            const hubPreviewContainer = document.querySelector('.hub-video-preview');
+            const tempVideo = document.createElement('video');
+            tempVideo.src = videoUrl;
+            if (videoType === 'shorts') {
+                if (hubPreviewContainer) hubPreviewContainer.style.aspectRatio = '9/16';
+                if (previewImg) previewImg.style.aspectRatio = '9/16';
+            } else {
+                if (hubPreviewContainer) hubPreviewContainer.style.aspectRatio = '16/9';
+                if (previewImg) previewImg.style.aspectRatio = '16/9';
+            }
+
+            tempVideo.onloadeddata = function() {
+                const canvas = document.createElement('canvas');
+                canvas.width = tempVideo.videoWidth;
+                canvas.height = tempVideo.videoHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(tempVideo, 0, 0, canvas.width, canvas.height);
+                const dataUrl = canvas.toDataURL('image/jpeg');
+                if (isImgElement) {
+                    previewImg.src = dataUrl;
+                } else {
+                    previewImg.style.backgroundImage = `url(${dataUrl})`;
+                    previewImg.style.backgroundSize = 'cover';
+                    previewImg.innerHTML = '';
+                }
+                
+                const coverImg = document.getElementById('v-hub-cover-preview');
+                if (!coverImg.dataset.customCover) {
+                    if (coverImg.tagName.toLowerCase() === 'img') {
+                        coverImg.src = dataUrl;
+                    } else {
+                        coverImg.style.backgroundImage = `url(${dataUrl})`;
+                        coverImg.style.backgroundSize = 'cover';
+                        coverImg.innerHTML = '';
+                    }
+                }
+                
+                if (hubPreviewContainer) {
+                    const existingVideo = hubPreviewContainer.querySelector('video');
+                    if (existingVideo) existingVideo.remove();
+                    
+                    const videoElement = document.createElement('video');
+                    videoElement.src = videoUrl;
+                    videoElement.autoplay = true;
+                    videoElement.loop = true;
+                    videoElement.muted = true;
+                    videoElement.controls = true; 
+                    videoElement.style.width = '100%';
+                    videoElement.style.height = '100%';
+                    videoElement.style.objectFit = videoType === 'shorts' ? 'cover' : 'contain';
+                    videoElement.style.position = 'absolute';
+                    videoElement.style.top = '0';
+                    videoElement.style.left = '0';
+                    videoElement.style.zIndex = '1';
+                    hubPreviewContainer.insertBefore(videoElement, hubPreviewContainer.firstChild);
+                    previewImg.style.display = 'none';
+                }
+            };
+        }
+        
+        function handleCoverImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const coverImg = document.getElementById('v-hub-cover-preview');
+                const videoType = document.getElementById('v-type').value;
+                
+                coverImg.dataset.customCover = "true";
+                if (videoType === 'shorts') {
+                    coverImg.style.aspectRatio = '9/16';
+                } else {
+                    coverImg.style.aspectRatio = '16/9';
+                }
+                
+                if (coverImg.tagName.toLowerCase() === 'img') {
+                    coverImg.src = e.target.result;
+                } else {
+                    coverImg.style.backgroundImage = `url(${e.target.result})`;
+                    coverImg.style.backgroundSize = 'cover';
+                    coverImg.innerHTML = '';
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const videoTypeSelect = document.getElementById('v-type');
+            if (videoTypeSelect) {
+                videoTypeSelect.addEventListener('change', function() {
+                    const videoType = this.value;
+                    const previewImg = document.getElementById('hub-preview-img');
+                    const coverImg = document.getElementById('v-hub-cover-preview');
+                    const hubPreviewContainer = document.querySelector('.hub-video-preview');
+                    
+                    if (videoType === 'shorts') {
+                        if (hubPreviewContainer) hubPreviewContainer.style.aspectRatio = '9/16';
+                        previewImg.style.aspectRatio = '9/16';
+                        coverImg.style.aspectRatio = '9/16';
+                        if (hubPreviewContainer) {
+                            const vid = hubPreviewContainer.querySelector('video');
+                            if (vid) vid.style.objectFit = 'cover';
+                        }
+                    } else {
+                        if (hubPreviewContainer) hubPreviewContainer.style.aspectRatio = '16/9';
+                        previewImg.style.aspectRatio = '16/9';
+                        coverImg.style.aspectRatio = '16/9';
+                        if (hubPreviewContainer) {
+                            const vid = hubPreviewContainer.querySelector('video');
+                            if (vid) vid.style.objectFit = 'contain';
+                        }
+                    }
+                });
+            }
+        });
+
+        // --- Draggable & Editable Text System ---
+        let uploadTextOverlayPos = { left: '50%', top: '50%' };
+        let editTextOverlayPos = { left: '50%', top: '50%' };
+        let isDraggingText = false;
+        let startCursorX, startCursorY, startTextLeft, startTextTop;
+        let activeDragContext = null; 
+
+        function updateDraggableText(context) {
+            const inputEl = document.getElementById(`${context === 'edit' ? 'edit-' : ''}v-text-overlay-input`);
+            const dragEl = document.getElementById(`${context === 'edit' ? 'edit-' : 'upload-'}draggable-text`);
+            const fontFamilyEl = document.getElementById(`${context === 'edit' ? 'edit-' : ''}v-font-family`);
+            const sizeSlider = document.getElementById(`${context === 'edit' ? 'edit-' : ''}v-text-size`);
+            
+            const text = inputEl.value;
+            dragEl.innerText = text;
+            dragEl.style.fontFamily = fontFamilyEl.value + ', sans-serif';
+            dragEl.style.fontSize = sizeSlider.value + 'px';
+            
+            if(!text) dragEl.style.display = 'none';
+            else dragEl.style.display = 'block';
+        }
+
+        function setupDrag(dragEl, context) {
+            dragEl.addEventListener('mousedown', (e) => startDragText(e, dragEl, context));
+            dragEl.addEventListener('touchstart', (e) => startDragText(e, dragEl, context), {passive: false});
+        }
+        setupDrag(document.getElementById('edit-draggable-text'), 'edit');
+        setupDrag(document.getElementById('upload-draggable-text'), 'upload');
+
+        function startDragText(e, element, context) {
+            e.preventDefault();
+            isDraggingText = true;
+            activeDragContext = { el: element, type: context };
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            startCursorX = clientX;
+            startCursorY = clientY;
+            startTextLeft = element.offsetLeft;
+            startTextTop = element.offsetTop;
+
+            document.addEventListener('mousemove', dragText);
+            document.addEventListener('mouseup', stopDragText);
+            document.addEventListener('touchmove', dragText, {passive: false});
+            document.addEventListener('touchend', stopDragText);
+        }
+
+        function dragText(e) {
+            if(!isDraggingText || !activeDragContext) return;
+            e.preventDefault();
+            
+            const containerEl = activeDragContext.type === 'edit' ? document.getElementById('edit-hub-preview-container') : document.querySelector('.hub-video-preview');
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            const dx = clientX - startCursorX;
+            const dy = clientY - startCursorY;
+
+            let newLeft = startTextLeft + dx;
+            let newTop = startTextTop + dy;
+
+            if(newLeft < 0) newLeft = 0;
+            if(newLeft > containerEl.offsetWidth) newLeft = containerEl.offsetWidth;
+            if(newTop < 0) newTop = 0;
+            if(newTop > containerEl.offsetHeight) newTop = containerEl.offsetHeight;
+
+            activeDragContext.el.style.left = newLeft + 'px';
+            activeDragContext.el.style.top = newTop + 'px';
+
+            let percentagePos = {
+                left: ((newLeft / containerEl.offsetWidth) * 100) + '%',
+                top: ((newTop / containerEl.offsetHeight) * 100) + '%'
+            };
+            if(activeDragContext.type === 'edit') editTextOverlayPos = percentagePos;
+            else uploadTextOverlayPos = percentagePos;
+        }
+
+        function stopDragText() {
+            isDraggingText = false;
+            activeDragContext = null;
+            document.removeEventListener('mousemove', dragText);
+            document.removeEventListener('mouseup', stopDragText);
+            document.removeEventListener('touchmove', dragText);
+            document.removeEventListener('touchend', stopDragText);
+        }
+
+        // --- Font Selection Logic ---
+        let currentTargetForFont = 'upload';
+        function openFontSheet(target) {
+            pushStateIfNotHome();
+            currentTargetForFont = target;
+            document.getElementById('font-bottom-sheet').classList.add('open');
+        }
+        function closeFontSheet() {
+            document.getElementById('font-bottom-sheet').classList.remove('open');
+        }
+        function applyFont(fontName) {
+            const fontInput = document.getElementById(`${currentTargetForFont === 'edit' ? 'edit-' : ''}v-font-family`);
+            fontInput.value = fontName;
+            updateDraggableText(currentTargetForFont);
+            closeFontSheet();
+        }
+
+
+        function uploadVideo() {
+            const title = document.getElementById('v-title').value;
+            const tags = document.getElementById('v-tags').value;
+            const templateLink = document.getElementById('v-template-link').value; 
+            const type = document.getElementById('v-type').value;
+            const visibility = document.getElementById('v-visibility').value;
+            const scheduleTime = document.getElementById('v-schedule').value;
+            const videoFile = document.getElementById('v-file').files[0];
+            const uploaderName = document.getElementById('display-name').innerText;
+            const uploaderPic = document.getElementById('display-pic').src;
+            
+            const coverPreviewEl = document.getElementById('v-hub-cover-preview');
+            let coverImageSrc = '';
+            if (coverPreviewEl.tagName.toLowerCase() === 'img') {
+                coverImageSrc = coverPreviewEl.src;
+            } else {
+                const bgImage = coverPreviewEl.style.backgroundImage;
+                if (bgImage && bgImage !== 'none') {
+                    coverImageSrc = bgImage.replace(/^url\(['"]?/, '').replace(/['"]?\)$/, '');
+                }
+            }
+
+            if(!videoFile) { alert(getTranslation('select_file_alert')); return; }
+            
+            const newVideo = { 
+                title: title || 'Untitled Video', 
+                desc: '', 
+                hashtags: '', 
+                tags: tags || '', 
+                templateLink: templateLink || null, 
+                textOverlay: document.getElementById('v-text-overlay-input').value,
+                textOverlayPos: uploadTextOverlayPos,
+                fontFamily: document.getElementById('v-font-family').value,
+                fontSize: document.getElementById('v-text-size').value,
+                type: type, 
+                visibility: visibility, 
+                scheduleTime: scheduleTime, 
+                videoBlob: videoFile, 
+                coverImage: coverImageSrc,
+                uploaderName: uploaderName !== getTranslation('name_default') ? uploaderName : 'User', 
+                uploaderPic: uploaderPic, 
+                likes: 0, 
+                views: 0, 
+                commentsList: [], 
+                shares: 0, 
+                isLiked: false, 
+                isSaved: false, 
+                isOwnVideo: true, 
+                timestamp: new Date().getTime() 
+            };
+            
+            const transaction = db.transaction(["videos"], "readwrite"); 
+            const store = transaction.objectStore("videos"); 
+            const request = store.add(newVideo);
+            request.onsuccess = function(e) {
+                newVideo.id = e.target.result;
+                let showImmediatelyInFeed = true;
+                if (visibility === 'unlisted') showImmediatelyInFeed = false;
+                if (scheduleTime && new Date(scheduleTime).getTime() > new Date().getTime()) {
+                    showImmediatelyInFeed = false;
+                }
+
+                if (showImmediatelyInFeed) {
+                    renderVideo(newVideo, true);
+                }
+                
+                loadProfileVideos();
+                let publishMessage = getTranslation('upload_success') + "\nVisibility: " + (visibility === 'unlisted' ? 'Unlisted (Profile Only)' : 'Public');
+                if (scheduleTime) {
+                    const dateObj = new Date(scheduleTime);
+                    publishMessage += "\nScheduled for: " + dateObj.toLocaleString();
+                }
+                alert(publishMessage);
+                toggleSection('feed-page', document.querySelectorAll('.nav-item')[0]);
+                
+                // Reset inputs
+                document.getElementById('v-title').value = ''; 
+                document.getElementById('v-tags').value = ''; 
+                document.getElementById('v-template-link').value = '';
+                document.getElementById('v-file').value = '';
+                document.getElementById('v-schedule').value = '';
+                document.getElementById('v-text-overlay-input').value = '';
+                document.getElementById('v-font-family').value = 'Roboto';
+                document.getElementById('v-text-size').value = 24;
+                updateDraggableText('upload');
+                
+                document.getElementById('v-hub-cover-preview').removeAttribute('data-custom-cover');
+                const pImg = document.getElementById('hub-preview-img');
+                const cImg = document.getElementById('v-hub-cover-preview');
+
+                if (pImg.tagName.toLowerCase() === 'img') {
+                    pImg.src = "https://placehold.co/400x700/160c24/F5C518?text=Tap+to%nUpload+Video";
+                } else {
+                    pImg.style.backgroundImage = 'none';
+                    pImg.innerHTML = '<div class="hub-upload-icon-circle"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></div><span class="hub-upload-text-large">Drag & drop your video here</span><span class="hub-upload-text-small">or</span><button class="hub-upload-btn-main" onclick="event.stopPropagation(); document.getElementById(\'v-file\').click()">Choose from device</button>';
+                }
+
+                if (cImg.tagName.toLowerCase() === 'img') {
+                    cImg.src = "https://placehold.co/150x200/160c24/F5C518?text=Select%nCover";
+                } else {
+                    cImg.style.backgroundImage = 'none';
+                    cImg.innerHTML = '<span>Select</span><span>Cover</span>';
+                }
+                
+                const previewContainer = document.querySelector('.hub-video-preview');
+                const existingVid = previewContainer.querySelector('video');
+                if(existingVid) existingVid.remove();
+                document.getElementById('hub-preview-img').style.display = 'flex';
+            };
+        }
+
+        function loadVideosFromDB() {
+            const feed = document.getElementById('video-display');
+            feed.innerHTML = ''; 
+            if(!db) return; 
+            const transaction = db.transaction(["videos"], "readonly"); 
+            const store = transaction.objectStore("videos"); 
+            const request = store.openCursor(null, 'prev');
+            let hasVideos = false;
+            
+            request.onsuccess = function(event) {
+                const cursor = event.target.result;
+                if(cursor) { 
+                    const video = cursor.value;
+                    let showInPublicFeed = true;
+
+                    if(video.visibility === 'unlisted') {
+                        showInPublicFeed = false;
+                    }
+
+                    if(video.scheduleTime) {
+                        const schedDate = new Date(video.scheduleTime).getTime();
+                        if(new Date().getTime() < schedDate) {
+                            showInPublicFeed = false;
+                        }
+                    }
+
+                    if(showInPublicFeed) {
+                        hasVideos = true;
+                        renderVideo(video, false, 'video-display'); 
+                    }
+                    cursor.continue();
+                } 
+                else { 
+                    if(!hasVideos) { 
+                        feed.innerHTML = `<div class="no-videos" id="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg><p data-i18n="no_videos_msg">${getTranslation('no_videos_msg') || 'No videos.'}</p></div>`; 
+                    } 
+                }
+            };
+        }
+
+        function triggerDirectDownload(blob, filename) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a'); 
+            a.style.display = 'none';
+            a.href = url; 
+            a.download = filename || "Motion_Template_Video.mp4"; 
+            document.body.appendChild(a); 
+            a.click();
+            setTimeout(() => {
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }, 100);
+        }
+
+        function renderVideo(videoData, prepend = false, targetContainerId = 'video-display') {
+            const feed = document.getElementById(targetContainerId);
+            if(!feed) return;
+            const emptyState = feed.querySelector('#empty-state'); if (emptyState) emptyState.remove();
+            if(!videoData.commentsList) videoData.commentsList = []; if(typeof videoData.views === 'undefined') videoData.views = 0;
+            if (!videoData.isOwnVideo) { if (!window.viewedVideos) window.viewedVideos = new Set(); if (!window.viewedVideos.has(videoData.id)) { videoData.views++; window.viewedVideos.add(videoData.id); setTimeout(() => { updateVideoInDB(videoData); }, 100); } }
+
+            const videoUrl = URL.createObjectURL(videoData.videoBlob);
+            const card = document.createElement('div'); card.className = 'video-card ' + (videoData.type === 'long' ? 'video-card-long' : 'video-card-short');
+            card.id = (targetContainerId === 'list-feed-card-' ? 'l-feed-card-' : 'video-card-') + videoData.id;
+            const objectFitStyle = videoData.type === 'long' ? 'object-fit: contain; background: #000;' : 'object-fit: cover;';
+            const coverObjectFit = videoData.type === 'long' ? 'contain' : 'cover';
+            const coverOverlayHtml = videoData.coverImage && !videoData.coverImage.includes('YOUR_IMAGE_LINK_HERE') && !videoData.coverImage.includes('placehold.co') ? `<img id="cover-overlay-${targetContainerId}-${videoData.id}" src="${videoData.coverImage}" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:${coverObjectFit}; z-index:4; transition: opacity 0.3s ease; pointer-events:none; background:#000;">` : '';
+            const templateHtml = videoData.templateLink ? `<div class="template-btn-container"><a href="${videoData.templateLink}" target="_blank" class="use-template-btn" onclick="event.stopPropagation();"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>Use Template</a></div>` : '';
+            const followButtonHtml = videoData.isOwnVideo ? '' : `<button class="follow-btn">Follow</button>`;
+            const videoMenuOptionsHtml = videoData.isOwnVideo ? `<div class="video-more-options" onclick="toggleVideoMenu(event, ${videoData.id}, '${targetContainerId}')">⋮</div><div class="video-more-menu" id="video-menu-${targetContainerId}-${videoData.id}"><button onclick="openEditVideoModal(${videoData.id})">Edit Video</button><button style="color:#ff4d4d;" onclick="deleteVideo(${videoData.id})">Delete</button></div>` : '';
+            
+            let scheduleBadge = '';
+            if (videoData.scheduleTime && new Date(videoData.scheduleTime).getTime() > new Date().getTime()) {
+                scheduleBadge = `<span style="background: rgba(245, 197, 24, 0.8); color: black; padding: 2px 6px; font-size: 10px; border-radius: 3px; font-weight:bold; margin-left:5px;">Scheduled</span>`;
+            }
+            let privacyBadge = videoData.visibility === 'unlisted' ? `<span style="background: rgba(255, 50, 50, 0.8); padding: 2px 6px; font-size: 10px; border-radius: 3px; margin-left:5px;">Unlisted</span>` : '';
+            
+            let textPos = videoData.textOverlayPos || { left: '50%', top: '50%' };
+            let fFamily = videoData.fontFamily || 'Roboto';
+            let fSize = videoData.fontSize || '24';
+            let overlayTextHtml = videoData.textOverlay ? `<div style="position:absolute; top:${textPos.top}; left:${textPos.left}; transform:translate(-50%, -50%); color:white; font-family:'${fFamily}', sans-serif; font-size:${fSize}px; font-weight:bold; text-shadow:2px 2px 4px rgba(0,0,0,0.8); z-index:10; pointer-events:none; text-align:center; white-space:nowrap;">${videoData.textOverlay}</div>` : '';
+            
+            card.innerHTML = `
+                <video src="${videoUrl}" style="${objectFitStyle}" playsinline autoplay loop></video>
+                ${overlayTextHtml}
+                ${coverOverlayHtml}
+                <div class="video-tap-overlay"></div>
+                ${videoMenuOptionsHtml}
+                <svg class="big-heart" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                <div class="video-actions">
+                    <div class="action-btn like-btn ${videoData.isLiked ? 'liked' : ''}"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span class="action-text like-count">${videoData.likes}</span></div>
+                    <div class="action-btn comment-btn" onclick="openComments(${videoData.id})"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span class="action-text comment-count" id="comment-count-${videoData.id}">${videoData.commentsList.length}</span></div>
+                    <div class="action-btn save-btn ${videoData.isSaved ? 'saved' : ''}" onclick="toggleSaveVideo(event, ${videoData.id}, this)">
+                        <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+                        <span class="action-text">Save</span>
+                    </div>
+                    <div class="action-btn"><svg viewBox="0 0 24 24" fill="none" stroke-linejoin="round" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg><span class="action-text">Share</span></div>
+                    <div class="action-btn download-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg><span class="action-text">Download</span></div>
+                </div>
+                <div class="video-info">${templateHtml} <div class="video-header"><img src="${videoData.uploaderPic}" class="video-avatar"><span class="video-username">${videoData.uploaderName}</span>${followButtonHtml}</div><div class="video-title">${videoData.title} <br> <span style="font-size:11px;color:var(--theme-color);">${videoData.tags || ''}</span></div><span class="video-badge">${videoData.type.toUpperCase()}</span>${privacyBadge}${scheduleBadge}</div>
+            `;
+            
+            if(prepend) feed.prepend(card); else feed.appendChild(card);
+            const overlay = card.querySelector('.video-tap-overlay'); const videoElement = card.querySelector('video'); const bigHeart = card.querySelector('.big-heart');
+            const likeBtn = card.querySelector('.like-btn'); const likeCountSpan = card.querySelector('.like-count');
+            const followBtn = card.querySelector('.follow-btn'); const dlBtn = card.querySelector('.download-btn');
+            
+            setTimeout(() => {
+                const coverOverlay = card.querySelector(`#cover-overlay-${targetContainerId}-${videoData.id}`);
+                if(coverOverlay) {
+                    coverOverlay.style.opacity = '0';
+                    setTimeout(() => coverOverlay.remove(), 300);
+                }
+            }, 1000);
+            if (prepend) {
+                setTimeout(() => {
+                    videoElement.muted = true;
+                    videoElement.play().catch(e => console.log('Autoplay issue:', e));
+                }, 100);
+            }
+
+            let lastTap = 0; let tapTimeout;
+            if(followBtn) {
+                followBtn.addEventListener('click', () => {
+                    let currentFollowing = parseInt(localStorage.getItem('vibenet_following') || '0'); let currentFollowers = parseInt(localStorage.getItem('vibenet_followers') || '0');
+                    if(!followBtn.classList.contains('following')) { followBtn.classList.add('following'); followBtn.innerText = 'Following'; currentFollowing++; if(!videoData.isOwnVideo) { currentFollowers++; } } 
+                    else { followBtn.classList.remove('following'); followBtn.innerText = 'Follow'; if(currentFollowing > 0) currentFollowing--; if(!videoData.isOwnVideo && currentFollowers > 0) currentFollowers--; }
+                    localStorage.setItem('vibenet_following', currentFollowing); localStorage.setItem('vibenet_followers', currentFollowers);
+                    document.getElementById('following-count').innerText = currentFollowing; document.getElementById('followers-count').innerText = currentFollowers;
+                });
+            }
+
+            dlBtn.addEventListener('click', () => { triggerDirectDownload(videoData.videoBlob, `Motion_Template_${videoData.id}.mp4`); });
+            const handleLike = () => { 
+                videoData.isLiked = !videoData.isLiked;
+                videoData.likes += videoData.isLiked ? 1 : -1; 
+                likeBtn.classList.toggle('liked', videoData.isLiked);
+                likeCountSpan.innerText = videoData.likes; 
+                updateVideoInDB(videoData); 
+            };
+            
+            likeBtn.addEventListener('click', handleLike);
+            overlay.addEventListener('click', (e) => {
+                const currentTime = new Date().getTime(); const tapLength = currentTime - lastTap; clearTimeout(tapTimeout);
+                const menu = document.getElementById(`video-menu-${targetContainerId}-${videoData.id}`); if(menu) menu.style.display = 'none';
+                if (tapLength < 300 && tapLength > 0) { if (!videoData.isLiked) handleLike(); bigHeart.classList.add('animate'); setTimeout(() => bigHeart.classList.remove('animate'), 800); e.preventDefault(); } 
+                else { tapTimeout = setTimeout(() => { if (videoElement.paused) videoElement.play().catch(err=>{}); else videoElement.pause(); }, 300); }
+                lastTap = currentTime;
+            });
+        }
+
+        function toggleSaveVideo(event, id, btnElement) {
+            event.stopPropagation();
+            const transaction = db.transaction(["videos"], "readwrite");
+            const store = transaction.objectStore("videos");
+            const request = store.get(id);
+            request.onsuccess = function(e) {
+                const videoData = e.target.result;
+                if(videoData) {
+                    videoData.isSaved = !videoData.isSaved;
+                    store.put(videoData);
+                    if(btnElement) btnElement.classList.toggle('saved', videoData.isSaved);
+                }
+            };
+        }
+
+        function updateVideoInDB(videoData) { const transaction = db.transaction(["videos"], "readwrite"); const store = transaction.objectStore("videos"); store.put(videoData); }
+        function toggleVideoMenu(e, id, targetContainerId) { e.stopPropagation(); const menu = document.getElementById(`video-menu-${targetContainerId}-${id}`); if(menu) menu.style.display = menu.style.display === 'block' ? 'none' : 'block'; }
+        
+        function deleteVideo(id) {
+            if(confirm(getTranslation('delete_confirm'))) {
+                const transaction = db.transaction(["videos"], "readwrite");
+                const store = transaction.objectStore("videos"); store.delete(id);
+                const standardCard = document.getElementById(`video-card-${id}`); const feedCard = document.getElementById(`l-feed-card-${id}`);
+                if(standardCard) standardCard.remove(); if(feedCard) feedCard.remove(); loadProfileVideos(); alert(getTranslation('delete_success'));
+            }
+        }
+
+        let currentEditCoverDataUrl = null;
+        function handleEditCoverUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                currentEditCoverDataUrl = e.target.result;
+                document.getElementById('edit-v-cover-preview').src = currentEditCoverDataUrl;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function openEditVideoModal(id) {
+            pushStateIfNotHome();
+            document.querySelectorAll('.video-more-menu').forEach(m => m.style.display='none');
+            const transaction = db.transaction(["videos"], "readonly"); const store = transaction.objectStore("videos"); const request = store.get(id);
+            request.onsuccess = function(e) {
+                const vid = e.target.result;
+                document.getElementById('edit-v-id').value = vid.id; 
+                document.getElementById('edit-v-title').value = vid.title; 
+                document.getElementById('edit-v-tags').value = vid.tags || ''; 
+                document.getElementById('edit-v-template-link').value = vid.templateLink || ''; 
+                document.getElementById('edit-v-text-overlay-input').value = vid.textOverlay || ''; 
+                document.getElementById('edit-v-font-family').value = vid.fontFamily || 'Roboto'; 
+                document.getElementById('edit-v-text-size').value = vid.fontSize || 24; 
+                document.getElementById('edit-v-visibility').value = vid.visibility || 'public';
+                
+                const fallbackImage = 'https://via.placeholder.com/75x100?text=Cover';
+                document.getElementById('edit-v-cover-preview').src = vid.coverImage && !vid.coverImage.includes('YOUR_IMAGE_LINK_HERE') && !vid.coverImage.includes('placehold.co') ? vid.coverImage : fallbackImage;
+                document.getElementById('edit-v-cover').value = '';
+                currentEditCoverDataUrl = null;
+
+                const previewVideo = document.getElementById('edit-preview-video');
+                previewVideo.src = URL.createObjectURL(vid.videoBlob);
+                previewVideo.style.objectFit = vid.type === 'long' ? 'contain' : 'cover';
+
+                editTextOverlayPos = vid.textOverlayPos || { left: '50%', top: '50%' };
+                
+                updateDraggableText('edit');
+                const dragElEdit = document.getElementById('edit-draggable-text');
+                dragElEdit.style.left = editTextOverlayPos.left;
+                dragElEdit.style.top = editTextOverlayPos.top;
+
+                document.getElementById('edit-video-modal').style.display = 'flex';
+            };
+        }
+
+        function closeEditVideoModal() { document.getElementById('edit-video-modal').style.display = 'none'; }
+        
+        function saveEditedVideo() {
+            const id = parseInt(document.getElementById('edit-v-id').value);
+            executeVideoSave(id, currentEditCoverDataUrl);
+        }
+
+        function executeVideoSave(id, newCoverDataUrl) {
+            const transaction = db.transaction(["videos"], "readwrite");
+            const store = transaction.objectStore("videos"); 
+            const request = store.get(id);
+            request.onsuccess = function(e) {
+                const vid = e.target.result;
+                vid.title = document.getElementById('edit-v-title').value; 
+                vid.tags = document.getElementById('edit-v-tags').value;
+                vid.templateLink = document.getElementById('edit-v-template-link').value; 
+                vid.textOverlay = document.getElementById('edit-v-text-overlay-input').value;
+                vid.textOverlayPos = editTextOverlayPos;
+                vid.fontFamily = document.getElementById('edit-v-font-family').value;
+                vid.fontSize = document.getElementById('edit-v-text-size').value;
+                vid.visibility = document.getElementById('edit-v-visibility').value;
+                
+                if (newCoverDataUrl) {
+                    vid.coverImage = newCoverDataUrl;
+                }
+
+                store.put(vid); 
+                closeEditVideoModal(); 
+                loadVideosFromDB(); 
+                loadProfileVideos();
+                alert(getTranslation('edit_success'));
+            };
+        }
+
+        function loadProfileVideos() {
+            const grid = document.getElementById('profile-video-grid');
+            grid.innerHTML = ''; 
+            if(!db) return; const transaction = db.transaction(["videos"], "readonly"); const store = transaction.objectStore("videos"); const request = store.openCursor(null, 'prev');
+            let postCounter = 0;
+            request.onsuccess = function(event) {
+                const cursor = event.target.result;
+                if(cursor) {
+                    const video = cursor.value;
+                    if(video.isOwnVideo) {
+                        postCounter++;
+                        const item = document.createElement('div'); item.className = 'profile-grid-item';
+                        
+                        const fallbackImage = 'https://via.placeholder.com/150';
+                        const displayCover = video.coverImage && !video.coverImage.includes('YOUR_IMAGE_LINK_HERE') && !video.coverImage.includes('placehold.co') ? video.coverImage : fallbackImage;
+                        
+                        let badgeHtml = '';
+                        if(video.visibility === 'unlisted') badgeHtml = `<div style="position:absolute; top:4px; right:4px; background:rgba(255,0,0,0.8); color:white; font-size:9px; padding:2px 4px; border-radius:3px;">Unlisted</div>`;
+                        if(video.scheduleTime && new Date(video.scheduleTime).getTime() > new Date().getTime()) badgeHtml = `<div style="position:absolute; top:4px; left:4px; background:rgba(245,197,24,0.9); color:black; font-size:9px; padding:2px 4px; border-radius:3px;">Scheduled</div>`;
+                        item.innerHTML = `<img src="${displayCover}" style="width: 100%; height: 100%; object-fit: cover;">${badgeHtml}<div class="profile-grid-views">▶ ${video.views || 0}</div>`;
+                        item.addEventListener('click', () => { openGenericFeed('profile', video.id); });
+                        grid.appendChild(item);
+                    }
+                    cursor.continue();
+                } else { document.getElementById('post-count').innerText = postCounter; }
+            };
+        }
+
+        function openGenericFeed(feedType, selectedVideoId = null) {
+            pushStateIfNotHome();
+            if (document.getElementById('settings-bottom-sheet').classList.contains('open')) closeSettingsSheet();
+            document.querySelectorAll('video').forEach(v => v.pause());
+            
+            const feedDisplay = document.getElementById('list-feed-display'); 
+            feedDisplay.innerHTML = '';
+            
+            const headerTitle = document.getElementById('list-feed-title');
+            if (feedType === 'profile') headerTitle.innerText = getTranslation('back');
+            else if (feedType === 'liked') headerTitle.innerText = getTranslation('liked_videos');
+            else if (feedType === 'saved') headerTitle.innerText = getTranslation('saved_videos');
+
+            const transaction = db.transaction(["videos"], "readonly"); 
+            const store = transaction.objectStore("videos");
+            const request = store.openCursor(null, 'prev');
+            
+            let targetCardElement = null;
+            let count = 0;
+            request.onsuccess = function(e) {
+                const cursor = e.target.result;
+                if(cursor) {
+                    const video = cursor.value;
+                    let shouldRender = false;
+                    
+                    if (feedType === 'profile' && video.isOwnVideo) shouldRender = true;
+                    if (feedType === 'liked' && video.isLiked) shouldRender = true;
+                    if (feedType === 'saved' && video.isSaved) shouldRender = true;
+                    if(shouldRender) { 
+                        count++;
+                        renderVideo(video, false, 'list-feed-display'); 
+                        if(selectedVideoId && video.id === selectedVideoId) { 
+                            targetCardElement = document.getElementById('l-feed-card-' + video.id);
+                        } 
+                    }
+                    cursor.continue();
+                } else {
+                    if(count === 0) {
+                         feedDisplay.innerHTML = `<div class="no-videos" style="height:100vh;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg><p>No videos found.</p></div>`;
+                    }
+                    document.getElementById('profile-page').style.display = 'none';
+                    document.getElementById('bottom-nav').style.display = 'none'; 
+                    document.getElementById('list-feed-page').style.display = 'block';
+                    
+                    if(targetCardElement) { 
+                        setTimeout(() => { targetCardElement.scrollIntoView({ behavior: 'auto' }); handleListFeedScroll(); }, 50);
+                    }
+                }
+            };
+        }
+
+        function closeGenericFeed() { 
+            document.querySelectorAll('#list-feed-display video').forEach(v => v.pause());
+            document.getElementById('list-feed-page').style.display = 'none';
+            document.getElementById('profile-page').style.display = 'flex'; 
+            document.getElementById('bottom-nav').style.display = 'flex'; 
+            loadProfileVideos();
+        }
+
+        function handleListFeedScroll() {
+            if (document.getElementById('list-feed-page').style.display === 'none') return;
+            const videos = document.querySelectorAll('#list-feed-display .video-card video');
+            videos.forEach(video => { const rect = video.getBoundingClientRect(); if (rect.top >= -200 && rect.bottom <= window.innerHeight + 200) { video.play().catch(e => {}); } else { video.pause(); } });
+        }
+        document.getElementById('list-feed-page').addEventListener('scroll', handleListFeedScroll, {passive: true});
+
+        let currentCommentVideoId = null;
+        function openComments(id) { pushStateIfNotHome(); currentCommentVideoId = id; document.getElementById('comment-bottom-sheet').classList.add('open'); renderCommentsList(); }
+        function closeComments() { document.getElementById('comment-bottom-sheet').classList.remove('open'); currentCommentVideoId = null; }
+
+        function renderCommentsList() {
+            const list = document.getElementById('comments-list');
+            list.innerHTML = '';
+            const transaction = db.transaction(["videos"], "readonly"); const store = transaction.objectStore("videos"); const request = store.get(currentCommentVideoId);
+            request.onsuccess = function(e) {
+                const videoData = e.target.result;
+                if(!videoData || !videoData.commentsList) return;
+                videoData.commentsList.forEach((cmt, index) => {
+                    if(cmt.hidden) return; 
+                    const div = document.createElement('div'); div.className = 'comment-item';
+                    div.innerHTML = `
+                        <div style="display:flex;">
+                        <img src="${cmt.pic}" class="comment-user-pic">
+                        <div class="comment-content">
+                            <div class="comment-username">${cmt.user}</div>
+                            <div class="comment-text" id="cmt-text-${index}">${cmt.text}</div>
+                        </div>
+                    </div>
+                    <div class="comment-actions-wrapper">
+                        <span class="comment-like-btn ${cmt.isLiked ? 'liked' : ''}" onclick="toggleCommentLike(${index})">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="${cmt.isLiked ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                            <span style="font-size:11px;">${cmt.likes || 0}</span>
+                        </span>
+                        <span class="comment-actions-btn" onclick="toggleCommentMenu(${index})">⋮</span>
+                        <div class="comment-menu" id="comment-menu-${index}">
+                            <button onclick="editComment(${index})" data-i18n="edit">Edit</button>
+                            <button onclick="hideComment(${index})" data-i18n="hide">Hide</button>
+                            <button style="color:red;" onclick="deleteComment(${index})" data-i18n="delete">Delete</button>
+                        </div>
+                    </div>`;
+                    list.appendChild(div);
+                });
+            };
+        }
+
+        function toggleCommentLike(index) {
+            const transaction = db.transaction(["videos"], "readwrite");
+            const store = transaction.objectStore("videos");
+            const request = store.get(currentCommentVideoId);
+            request.onsuccess = function(e) {
+                const videoData = e.target.result;
+                const cmt = videoData.commentsList[index];
+                cmt.isLiked = !cmt.isLiked;
+                if(!cmt.likes) cmt.likes = 0;
+                cmt.likes += cmt.isLiked ? 1 : -1;
+                store.put(videoData);
+                renderCommentsList();
+            };
+        }
+
+        function toggleCommentMenu(index) { const menu = document.getElementById(`comment-menu-${index}`); menu.style.display = menu.style.display === 'block' ? 'none' : 'block'; }
+        
+        function postComment() {
+            const input = document.getElementById('new-comment-input');
+            const text = input.value.trim(); if(!text) return;
+            const myName = document.getElementById('display-name').innerText; const myPic = document.getElementById('display-pic').src;
+            const transaction = db.transaction(["videos"], "readwrite");
+            const store = transaction.objectStore("videos"); const request = store.get(currentCommentVideoId);
+            request.onsuccess = function(e) {
+                const videoData = e.target.result;
+                if(!videoData.commentsList) videoData.commentsList = [];
+                videoData.commentsList.push({ text: text, user: myName !== getTranslation('name_default') ? myName : 'User', pic: myPic, hidden: false, likes: 0, isLiked: false });
+                store.put(videoData); input.value = ''; renderCommentsList();
+                const countSpan = document.getElementById(`comment-count-${currentCommentVideoId}`); if(countSpan) countSpan.innerText = videoData.commentsList.length;
+            };
+        }
+        
+        function deleteComment(index) { const transaction = db.transaction(["videos"], "readwrite"); const store = transaction.objectStore("videos"); const request = store.get(currentCommentVideoId); request.onsuccess = function(e) { const videoData = e.target.result; videoData.commentsList.splice(index, 1); store.put(videoData); renderCommentsList(); const countSpan = document.getElementById(`comment-count-${currentCommentVideoId}`); if(countSpan) countSpan.innerText = videoData.commentsList.length; }; }
+        function hideComment(index) { const transaction = db.transaction(["videos"], "readwrite"); const store = transaction.objectStore("videos"); const request = store.get(currentCommentVideoId); request.onsuccess = function(e) { const videoData = e.target.result; videoData.commentsList[index].hidden = true; store.put(videoData); renderCommentsList(); }; }
+        function editComment(index) {
+            document.getElementById(`comment-menu-${index}`).style.display = 'none';
+            const transaction = db.transaction(["videos"], "readonly"); const store = transaction.objectStore("videos"); const request = store.get(currentCommentVideoId);
+            request.onsuccess = function(e) {
+                const videoData = e.target.result;
+                const oldText = videoData.commentsList[index].text; const newText = prompt(getTranslation('edit_comment'), oldText);
+                if(newText && newText.trim() !== "") { videoData.commentsList[index].text = newText.trim(); db.transaction(["videos"], "readwrite").objectStore("videos").put(videoData); renderCommentsList(); }
+            };
+        }
+
+        function openChat() { document.getElementById('top-nav').style.display = 'none'; document.getElementById('bottom-nav').style.display = 'none'; toggleSection('chat-page', null); loadChats(); }
+        function closeChat() { document.getElementById('top-nav').style.display = 'flex'; document.getElementById('bottom-nav').style.display = 'flex'; toggleSection('feed-page', document.querySelectorAll('.nav-item')[0]); }
+        function loadChats() {
+            const chatContainer = document.getElementById('chat-messages');
+            const chats = JSON.parse(localStorage.getItem('vibenet_chats')) || []; const myName = document.getElementById('display-name').innerText;
+            chatContainer.innerHTML = '';
+            chats.forEach(chat => { const isSelf = chat.sender === myName; const msgDiv = document.createElement('div'); msgDiv.className = `chat-message ${isSelf ? 'self' : ''}`; msgDiv.innerHTML = `<div class="chat-sender">${chat.sender}</div>${chat.text}`; chatContainer.appendChild(msgDiv); });
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+        function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim(); if(!text) return;
+            const myName = document.getElementById('display-name').innerText; const chats = JSON.parse(localStorage.getItem('vibenet_chats')) || [];
+            chats.push({ sender: myName !== getTranslation('name_default') ? myName : 'User', text: text, time: new Date().getTime() });
+            if(chats.length > 100) chats.shift();
+            localStorage.setItem('vibenet_chats', JSON.stringify(chats)); input.value = ''; loadChats();
+        }
+
+        let currentStoryIndex = 0; let userStoriesArray = []; let storyTimeout; let hasStory = false; let currentViewingStoryIsMine = false;
+
+        function handleStoryRingClick() { if(hasStory) { viewStory("my_story"); } else { document.getElementById('story-upload').click(); } }
+
+        function handleStoryUpload(event) {
+            const files = event.target.files;
+            if(!files || files.length === 0) return;
+            const transaction = db.transaction(["stories"], "readwrite"); const store = transaction.objectStore("stories"); const request = store.get("my_story");
+            request.onsuccess = function(e) {
+                let storyData = e.target.result;
+                if(!storyData) storyData = { id: "my_story", items: [] };
+                if (storyData.items.length + files.length > 5) { alert(getTranslation('story_limit_alert')); return; }
+                for(let i=0; i<files.length; i++) { storyData.items.push({ blob: files[i], type: files[i].type, views: Math.floor(Math.random() * 50), likes: Math.floor(Math.random() * 10) }); }
+                store.put(storyData);
+                hasStory = true; document.getElementById('my-story-ring').classList.remove('add-story');
+                alert(getTranslation('story_added'));
+            };
+        }
+
+        function viewStory(storyId) {
+            const transaction = db.transaction(["stories"], "readonly");
+            const store = transaction.objectStore("stories"); const request = store.get(storyId);
+            request.onsuccess = function(e) {
+                const storyData = e.target.result;
+                if(!storyData || storyData.items.length === 0) return;
+                userStoriesArray = storyData.items; currentStoryIndex = 0; currentViewingStoryIsMine = (storyId === "my_story");
+                pushStateIfNotHome(); document.getElementById('story-viewer').style.display = 'flex';
+                playCurrentStory();
+            };
+        }
+
+        function playCurrentStory() {
+            document.querySelectorAll('video').forEach(v => { v.pause(); v.currentTime = 0; });
+            if(currentStoryIndex >= userStoriesArray.length) { closeStory(); return; }
+            const story = userStoriesArray[currentStoryIndex];
+            const content = document.getElementById('story-content');
+            const url = URL.createObjectURL(story.blob);
+            if (currentViewingStoryIsMine) {
+                document.getElementById('my-story-stats').style.display = 'flex'; document.getElementById('story-menu-trigger').style.display = 'block'; document.getElementById('story-viewer-controls').style.display = 'none';
+                document.getElementById('v-count-num').innerText = story.views || 0; document.getElementById('l-count-num').innerText = story.likes || 0;
+            } else {
+                document.getElementById('my-story-stats').style.display = 'none'; document.getElementById('story-menu-trigger').style.display = 'none'; document.getElementById('story-viewer-controls').style.display = 'flex';
+            }
+            document.getElementById('story-options-menu').style.display = 'none';
+            if(story.type.startsWith('video/')) { content.innerHTML = `<video src="${url}" autoplay playsinline onended="nextStory()"></video>`; } 
+            else { content.innerHTML = `<img src="${url}">`; }
+
+            const bar = document.getElementById('story-progress-bar'); bar.style.transition = 'none'; bar.style.width = '0%';
+            setTimeout(() => {
+                const duration = story.type.startsWith('video/') ? 10000 : 5000;
+                bar.style.transition = `width ${duration}ms linear`; bar.style.width = '100%';
+                clearTimeout(storyTimeout);
+                storyTimeout = setTimeout(nextStory, duration); 
+            }, 50);
+        }
+
+        function toggleStoryOptions() { const menu = document.getElementById('story-options-menu'); menu.style.display = (menu.style.display === 'block') ? 'none' : 'block'; }
+
+        function deleteCurrentStory() {
+            if(confirm(getTranslation('delete_confirm'))) {
+                userStoriesArray.splice(currentStoryIndex, 1);
+                const transaction = db.transaction(["stories"], "readwrite"); const store = transaction.objectStore("stories");
+                if(userStoriesArray.length === 0) {
+                    store.delete("my_story"); hasStory = false; document.getElementById('my-story-ring').classList.add('add-story'); closeStory();
+                } else {
+                    store.get("my_story").onsuccess = function(e) { let data = e.target.result; data.items = userStoriesArray; store.put(data); if(currentStoryIndex >= userStoriesArray.length) { currentStoryIndex = 0; } playCurrentStory(); };
+                }
+            }
+        }
+
+        function nextStory() { clearTimeout(storyTimeout); currentStoryIndex++; playCurrentStory(); }
+        function closeStory() { clearTimeout(storyTimeout); document.getElementById('story-viewer').style.display = 'none'; document.getElementById('story-content').innerHTML = ''; document.getElementById('story-options-menu').style.display = 'none'; handleVideoScroll(); }
+
+        function loadStoryFromDB() {
+            if(!db) { setTimeout(loadStoryFromDB, 500); return; }
+            const transaction = db.transaction(["stories"], "readonly"); const store = transaction.objectStore("stories"); const request = store.get("my_story");
+            request.onsuccess = function(e) { if(e.target.result && e.target.result.items && e.target.result.items.length > 0) { hasStory = true; document.getElementById('my-story-ring').classList.remove('add-story'); } }
+        }
+        setTimeout(loadStoryFromDB, 1000);
+        
+        let lastScrollY = window.scrollY;
+        function handleScrollVisibility() {
+            if (document.getElementById('feed-page').style.display === 'none') return;
+            const topHeader = document.getElementById('top-nav');
+            if (!topHeader) return;
+            if (window.scrollY > 50 && window.scrollY > lastScrollY) { topHeader.classList.add('header-hidden'); } else { topHeader.classList.remove('header-hidden'); }
+            lastScrollY = window.scrollY;
+        }
+
+        function handleVideoScroll() {
+            if (!supabaseClient || !document.getElementById('auth-screen') || document.getElementById('auth-screen').style.display !== 'none') return;
+            if (document.getElementById('feed-page').style.display === 'none') return;
+            const videos = document.querySelectorAll('#video-display .video-card video');
+            videos.forEach(video => { const rect = video.getBoundingClientRect(); if (rect.top >= -200 && rect.bottom <= window.innerHeight + 200) { video.play().catch(e => {}); } else { video.pause(); } });
+        }
+        
+        document.addEventListener('scroll', () => {
+            handleVideoScroll();
+            handleScrollVisibility();
+        }, {passive: true});
+    </script>
+    <!-- Facebook SDK and Login Integration -->
+<div id="fb-root"></div>
+<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
+
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '1077504378378568',
+      cookie     : true,
+      xfbml      : true,
+      version    : 'v19.0'
+    });
+      
+    FB.AppEvents.logPageView();   
+  };
+
+  function checkLoginState() {
+    FB.getLoginStatus(function(response) {
+      statusChangeCallback(response);
+    });
+  }
+
+  function statusChangeCallback(response) {
+    if (response.status === 'connected') {
+      FB.api('/me', {fields: 'name,email,picture'}, function(userInfo) {
+        alert('স্বাগতম ' + userInfo.name + '! আপনি সফলভাবে ফেসবুকের মাধ্যমে লগইন করেছেন।');
+        console.log('User Details:', userInfo);
+      });
+    } else {
+      alert('লগইন ব্যর্থ হয়েছে বা বাতিল করা হয়েছে।');
+    }
+  }
+</script>
+
+<!-- Facebook Login Button -->
+<fb:login-button 
+  scope="public_profile,email"
+  onlogin="checkLoginState();">
+</fb:login-button>
+
+</body>
+</html>
